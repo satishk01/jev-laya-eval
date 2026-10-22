@@ -1,0 +1,905 @@
+[
+    {
+        "input": "What does PII include in AI engineering, such as names, email addresses, phone numbers, and locations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "131 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe discipline sits between traditional software engineering and machine learning research. It borrows testing, version control, monitoring and deployment practices from software engineering. It borrows ideas such as evaluation datasets, metrics and error analysis from machine learning.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nGood AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Prompts and Prompt Engineering\nA prompt is the input text given to a language model to tell it what to do. Prompt engineering is the practice of designing and refining prompts so that the model produces useful, accurate and consistent outputs. It is usually the first and cheapest lever an AI engineer has for improving a system.\n\n---\n\n# AI Engineering Basics\n## Privacy and Data Handling\nAI applications frequently process personal and sensitive information, so privacy must be considered from the start. Personal data includes names, email addresses, phone numbers, locations and any information that can identify a person. Personally identifiable information is commonly abbreviated as PII.",
+                "inputParameters": {
+                    "keywords": [
+                        "privacy and data handling",
+                        "privacy",
+                        "data",
+                        "handling",
+                        "ai",
+                        "engineering"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "section": "Privacy and Data Handling",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does PII include in AI engineering, such as names, email addresses, phone numbers, and locations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "39 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe discipline sits between traditional software engineering and machine learning research. It borrows testing, version control, monitoring and deployment practices from software engineering. It borrows ideas such as evaluation datasets, metrics and error analysis from machine learning.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Memory and Conversation History Management\nUsers should be able to see and control what an assistant remembers about them. Clear controls for viewing, editing and deleting memories support privacy and trust. Many privacy regulations also require that personal data can be deleted on request.\n\n---\n\n# AI Engineering Basics\n## Observability and Tracing\nBecause traces contain prompts and responses, they may include personal or sensitive data. Teams should apply masking, access controls and retention limits to trace data. Observability must be balanced with the privacy obligations covered in the privacy section.\n\n---\n\n# AI Engineering Basics\n## Privacy and Data Handling\nAI applications frequently process personal and sensitive information, so privacy must be considered from the start. Personal data includes names, email addresses, phone numbers, locations and any information that can identify a person. Personally identifiable information is commonly abbreviated as PII.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.",
+                "inputParameters": {
+                    "keywords": [
+                        "privacy",
+                        "data",
+                        "handling"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "section": "Privacy and Data Handling",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does PII include in AI engineering, such as names, email addresses, phone numbers, and locations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "section": "Privacy and Data Handling",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between temperature and top-p in AI text sampling?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "127 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nGood AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Prompts and Prompt Engineering\nA prompt is the input text given to a language model to tell it what to do. Prompt engineering is the practice of designing and refining prompts so that the model produces useful, accurate and consistent outputs. It is usually the first and cheapest lever an AI engineer has for improving a system.\n\n---\n\n# AI Engineering Basics\n## Sampling: Temperature and Top-p\nTemperature is the most common sampling parameter. A low temperature makes the model favour the most probable tokens, producing more focused and repeatable output. A high temperature flattens the distribution, making less likely tokens more probable and the output more varied and creative.\n\n---\n\n# AI Engineering Basics\n## Glossary Recap\nA system prompt is a developer-written message that sets an assistant's behaviour and rules. Temperature is a sampling parameter where lower values give more predictable output and higher values give more varied output. Top-p sampling limits token choices to the most probable tokens whose combined probability reaches a threshold.",
+                "inputParameters": {
+                    "keywords": [
+                        "sampling: temperature and top-p",
+                        "sampling",
+                        "temperature",
+                        "top-p",
+                        "ai",
+                        "engineering"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "section": "Sampling: Temperature and Top-p",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between temperature and top-p in AI text sampling?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "9 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## Sampling: Temperature and Top-p\nWhen a model generates text, it produces a probability for every token in its vocabulary at each step. Sampling is the process of choosing which token to output from that probability distribution. Sampling parameters control how random or predictable the resulting text will be.\n\n---\n\n# AI Engineering Basics\n## Sampling: Temperature and Top-p\nTemperature is the most common sampling parameter. A low temperature makes the model favour the most probable tokens, producing more focused and repeatable output. A high temperature flattens the distribution, making less likely tokens more probable and the output more varied and creative.\n\n---\n\n# AI Engineering Basics\n## Sampling: Temperature and Top-p\nA temperature of zero, or very close to zero, approximates greedy decoding, where the single most likely token is chosen each time. Greedy decoding is useful for tasks that need consistency, such as classification or data extraction. Even at temperature zero, outputs from hosted APIs are not always perfectly identical because of hardware and batching effects.\n\n---\n\n# AI Engineering Basics\n## Sampling: Temperature and Top-p\nTop-p sampling, also called nucleus sampling, restricts choices to the smallest set of tokens whose combined probability reaches a threshold p. For example, with a top-p of 0.9, the model samples only from the tokens that together make up ninety percent of the probability. This cuts off the long tail of unlikely tokens while keeping some variety.\n\n---\n\n# AI Engineering Basics\n## Sampling: Temperature and Top-p\nProviders usually recommend adjusting either temperature or top-p, but not both at the same time. Changing both makes it harder to understand which setting caused a change in behaviour. For most applications, adjusting temperature alone is sufficient.\n\n---\n\n# AI Engineering Basics\n## Sampling: Temperature and Top-p\nSampling settings interact with evaluation. If a system uses a non-zero temperature, the same test input may pass once and fail the next time. Running each test case several times and looking at the pass rate gives a more honest picture of reliability.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nLower sampling temperatures can reduce some random errors but do not eliminate hallucinations. A model can be confidently wrong even at temperature zero. Temperature controls randomness, not factual accuracy.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+                "inputParameters": {
+                    "keywords": [
+                        "sampling",
+                        "temperature",
+                        "top-p"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "section": "Sampling: Temperature and Top-p",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between temperature and top-p in AI text sampling?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "section": "Sampling: Temperature and Top-p",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between sliding-window memory and summarization memory in an AI chat system?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "128 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nThe context window is the maximum number of tokens a model can consider at one time. It includes everything the model sees in a single request: the system prompt, the conversation history, any retrieved documents, tool results and the model's own output. If the total exceeds the context window, the request will fail or older content must be removed.\n\n---\n\n# AI Engineering Basics\n## Memory and Conversation History Management\nLanguage models are stateless, which means they do not remember anything between separate API requests. To create the experience of an ongoing conversation, the application must send the relevant conversation history with every new request. This history usually consists of earlier user and assistant messages.\n\n---\n\n# AI Engineering Basics\n## Memory and Conversation History Management\nShort-term memory refers to the conversation history kept within the current session. The simplest approach is to send the entire history every time. This works for short conversations but eventually exceeds the context window and becomes expensive.\n\n---\n\n# AI Engineering Basics\n## Memory and Conversation History Management\nMemory management directly affects cost and latency. Every token of history sent with a request is paid for and processed again. Efficient memory strategies keep conversations coherent without sending unnecessary text.\n\n---\n\n# AI Engineering Basics\n## Latency, Cost and Token Budgets\nThe cost of a hosted model request is typically based on the number of input and output tokens. Output tokens are usually priced higher than input tokens. Cost per request therefore depends on prompt length, retrieved context, conversation history and answer length.",
+                "inputParameters": {
+                    "keywords": [
+                        "memory and conversation history management",
+                        "memory",
+                        "conversation",
+                        "history",
+                        "management",
+                        "ai"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "section": "Memory and Conversation History Management",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between sliding-window memory and summarization memory in an AI chat system?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "17 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## Large Language Models\nAfter pretraining, models usually go through further training to make them follow instructions and behave helpfully. This stage often includes supervised fine-tuning on example conversations and reinforcement learning from human feedback, commonly called RLHF. The result is an instruction-tuned or chat model that responds to requests instead of simply continuing text.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nThe context window is the maximum number of tokens a model can consider at one time. It includes everything the model sees in a single request: the system prompt, the conversation history, any retrieved documents, tool results and the model's own output. If the total exceeds the context window, the request will fail or older content must be removed.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nContext windows vary widely between models, ranging from a few thousand tokens to hundreds of thousands or more. A larger context window lets an application include longer documents or longer conversations in a single request. However, a larger window does not guarantee that the model will use all of that information equally well.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nThe context window is separate from the model's long-term knowledge stored in its parameters. Anything placed in the context window is available only for that single request unless the application sends it again. A model does not remember earlier conversations unless the application includes them in the new request.\n\n---\n\n# AI Engineering Basics\n## Memory and Conversation History Management\nLanguage models are stateless, which means they do not remember anything between separate API requests. To create the experience of an ongoing conversation, the application must send the relevant conversation history with every new request. This history usually consists of earlier user and assistant messages.\n\n---\n\n# AI Engineering Basics\n## Memory and Conversation History Management\nShort-term memory refers to the conversation history kept within the current session. The simplest approach is to send the entire history every time. This works for short conversations but eventually exceeds the context window and becomes expensive.\n\n---\n\n# AI Engineering Basics\n## Memory and Conversation History Management\nMemory management directly affects cost and latency. Every token of history sent with a request is paid for and processed again. Efficient memory strategies keep conversations coherent without sending unnecessary text.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+                "inputParameters": {
+                    "keywords": [
+                        "memory",
+                        "conversation",
+                        "history",
+                        "management"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "section": "Memory and Conversation History Management",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between sliding-window memory and summarization memory in an AI chat system?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "section": "Memory and Conversation History Management",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "In AI observability, what does a trace capture for a single request, including spans?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "124 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nGood AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Prompts and Prompt Engineering\nA prompt is the input text given to a language model to tell it what to do. Prompt engineering is the practice of designing and refining prompts so that the model produces useful, accurate and consistent outputs. It is usually the first and cheapest lever an AI engineer has for improving a system.\n\n---\n\n# AI Engineering Basics\n## Retrieval-Augmented Generation (RAG)\nRetrieval-augmented generation, usually called RAG, is a pattern where an application retrieves relevant information and adds it to the prompt before the model generates an answer. RAG lets a model answer questions about private, specialised or recent information that it did not see during training. It is one of the most widely used patterns in AI engineering.\n\n---\n\n# AI Engineering Basics\n## Fine-tuning vs Prompting vs RAG\nPrompting, retrieval-augmented generation and fine-tuning are the three main ways to adapt a language model to a task. Each approach solves a different kind of problem, and they are often combined. Choosing among them is one of the most common decisions in AI engineering.",
+                "inputParameters": {
+                    "keywords": [
+                        "observability and tracing",
+                        "observability",
+                        "tracing",
+                        "ai",
+                        "engineering",
+                        "basics"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 4,
+            "section": "Observability and Tracing",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "In AI observability, what does a trace capture for a single request, including spans?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "4 paragraphs matched; showing 4.\n\n---\n\n# AI Engineering Basics\n## Observability and Tracing\nObservability is the ability to understand what a system is doing internally by examining the data it produces. For AI applications, observability means recording prompts, responses, tool calls, latency, token usage and errors. Without it, engineers cannot easily explain why a model gave a particular answer.\n\n---\n\n# AI Engineering Basics\n## Observability and Tracing\nFor a RAG application, a trace might show the user question, the rewritten query, the retrieved chunks, the final prompt and the model's answer. Seeing all of these together makes it easy to tell whether a bad answer came from poor retrieval or poor generation. This kind of root-cause analysis is the main benefit of tracing.\n\n---\n\n# AI Engineering Basics\n## Observability and Tracing\nObservability tools often let teams attach scores to traces. Scores can come from user feedback such as thumbs up or thumbs down, from automated evaluators, or from human reviewers. Linking quality scores to traces connects evaluation directly to real usage.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+                "inputParameters": {
+                    "keywords": [
+                        "observability",
+                        "tracing"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 4,
+            "section": "Observability and Tracing",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "In AI observability, what does a trace capture for a single request, including spans?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 4,
+            "section": "Observability and Tracing",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is AI engineering when building reliable software with pretrained LLMs using prompts, retrieval, tools, and evals?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "122 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nGood AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Prompts and Prompt Engineering\nA prompt is the input text given to a language model to tell it what to do. Prompt engineering is the practice of designing and refining prompts so that the model produces useful, accurate and consistent outputs. It is usually the first and cheapest lever an AI engineer has for improving a system.\n\n---\n\n# AI Engineering Basics\n## Retrieval-Augmented Generation (RAG)\nRetrieval-augmented generation, usually called RAG, is a pattern where an application retrieves relevant information and adds it to the prompt before the model generates an answer. RAG lets a model answer questions about private, specialised or recent information that it did not see during training. It is one of the most widely used patterns in AI engineering.\n\n---\n\n# AI Engineering Basics\n## Agents and the ReAct Loop\nAn AI agent is a system in which a language model decides, step by step, what actions to take in order to accomplish a goal. Unlike a single prompt and response, an agent can take multiple steps, observe the results, and adjust its plan. Agents are typically built from a model, a set of tools, instructions and a control loop.",
+                "inputParameters": {
+                    "keywords": [
+                        "what ai engineering is",
+                        "what",
+                        "ai",
+                        "engineering",
+                        "ai",
+                        "engineering"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 5,
+            "section": "What AI Engineering Is",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is AI engineering when building reliable software with pretrained LLMs using prompts, retrieval, tools, and evals?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "30 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nGood AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Prompts and Prompt Engineering\nA prompt is the input text given to a language model to tell it what to do. Prompt engineering is the practice of designing and refining prompts so that the model produces useful, accurate and consistent outputs. It is usually the first and cheapest lever an AI engineer has for improving a system.\n\n---\n\n# AI Engineering Basics\n## Retrieval-Augmented Generation (RAG)\nRetrieval-augmented generation, usually called RAG, is a pattern where an application retrieves relevant information and adds it to the prompt before the model generates an answer. RAG lets a model answer questions about private, specialised or recent information that it did not see during training. It is one of the most widely used patterns in AI engineering.\n\n---\n\n# AI Engineering Basics\n## Large Language Models\nA large language model, often shortened to LLM, is a neural network trained to predict the next piece of text given the text that came before it. Most modern LLMs are based on the transformer architecture, which uses a mechanism called attention to relate every token in the input to every other token. Attention lets the model weigh which earlier words matter most when predicting the next one.",
+                "inputParameters": {
+                    "keywords": [
+                        "what",
+                        "ai",
+                        "engineering"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 5,
+            "section": "What AI Engineering Is",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is AI engineering when building reliable software with pretrained LLMs using prompts, retrieval, tools, and evals?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 5,
+            "section": "What AI Engineering Is",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does an AI model’s context window include, and how do token limits affect requests?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "42 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nGood AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nContext windows vary widely between models, ranging from a few thousand tokens to hundreds of thousands or more. A larger context window lets an application include longer documents or longer conversations in a single request. However, a larger window does not guarantee that the model will use all of that information equally well.\n\n---\n\n# AI Engineering Basics\n## Prompts and Prompt Engineering\nA prompt is the input text given to a language model to tell it what to do. Prompt engineering is the practice of designing and refining prompts so that the model produces useful, accurate and consistent outputs. It is usually the first and cheapest lever an AI engineer has for improving a system.\n\n---\n\n# AI Engineering Basics\n## Retrieval-Augmented Generation (RAG)\nRetrieval-augmented generation, usually called RAG, is a pattern where an application retrieves relevant information and adds it to the prompt before the model generates an answer. RAG lets a model answer questions about private, specialised or recent information that it did not see during training. It is one of the most widely used patterns in AI engineering.",
+                "inputParameters": {
+                    "keywords": [
+                        "context windows",
+                        "context",
+                        "windows",
+                        "ai",
+                        "engineering",
+                        "basics"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 6,
+            "section": "Context Windows",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does an AI model’s context window include, and how do token limits affect requests?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "22 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nThe context window is the maximum number of tokens a model can consider at one time. It includes everything the model sees in a single request: the system prompt, the conversation history, any retrieved documents, tool results and the model's own output. If the total exceeds the context window, the request will fail or older content must be removed.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nContext windows vary widely between models, ranging from a few thousand tokens to hundreds of thousands or more. A larger context window lets an application include longer documents or longer conversations in a single request. However, a larger window does not guarantee that the model will use all of that information equally well.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nResearch and practical experience show that models sometimes pay less attention to information buried in the middle of a very long context. This effect is often called the lost in the middle problem. Placing the most important instructions and facts near the beginning or end of the prompt can help.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nFilling the context window also has practical costs. More input tokens mean higher cost per request and usually higher latency before the first output token appears. For this reason, engineers try to include only the information that is actually relevant to the current task.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nThe context window is separate from the model's long-term knowledge stored in its parameters. Anything placed in the context window is available only for that single request unless the application sends it again. A model does not remember earlier conversations unless the application includes them in the new request.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nThe maximum output length is often configured separately from the context window. Many APIs have a parameter, often called max tokens, that limits how many tokens the model may generate in its reply. If this limit is too low, the answer may be cut off mid-sentence.\n\n---\n\n# AI Engineering Basics\n## Context Windows\nEngineers manage context with techniques such as truncation, summarisation and retrieval. Truncation drops the oldest or least relevant content, while summarisation compresses earlier content into a shorter form. Retrieval avoids loading everything at once by fetching only the pieces most relevant to the current question.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+                "inputParameters": {
+                    "keywords": [
+                        "context",
+                        "windows"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 6,
+            "section": "Context Windows",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does an AI model’s context window include, and how do token limits affect requests?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 6,
+            "section": "Context Windows",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do embeddings, ANN search, and metadata help a vector database return the top-k most similar text results?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "131 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## Embeddings\nThe similarity between two embeddings is usually measured with cosine similarity. Cosine similarity measures the angle between two vectors and ranges from minus one to one, where higher values mean more similar. Some systems use dot product or Euclidean distance instead, depending on how the embeddings were trained.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nFinding the most similar vectors is called nearest neighbour search. An exact search compares the query against every stored vector, which becomes slow when there are millions of vectors. To stay fast, most vector databases use approximate nearest neighbour algorithms, commonly abbreviated as ANN.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nThe number of results returned by a similarity search is usually controlled by a parameter called k. Returning the top k results gives the application several candidate passages to work with. Choosing k involves a trade-off between recall and the amount of irrelevant text sent to the model.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nMetadata filtering lets an application restrict a search to vectors that match certain conditions. For example, a search might be limited to documents from a particular department or created after a given date. Filtering is important for both relevance and access control.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nVector search is not always the best retrieval method on its own. Keyword search methods such as BM25 are better at matching exact terms like product codes, names and error messages. Hybrid search combines keyword and vector results to get the strengths of both.\n\n---\n\n# AI Engineering Basics\n## Glossary Recap\nA vector database stores embeddings and supports fast similarity search over them. Cosine similarity is a common measure of how close two embeddings are in meaning. Faithfulness is an evaluation metric that checks whether an answer is supported by its provided context.",
+                "inputParameters": {
+                    "keywords": [
+                        "vector databases and similarity search",
+                        "vector",
+                        "databases",
+                        "similarity",
+                        "search",
+                        "ai"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 7,
+            "section": "Vector Databases and Similarity Search",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do embeddings, ANN search, and metadata help a vector database return the top-k most similar text results?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "19 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## Embeddings\nThe similarity between two embeddings is usually measured with cosine similarity. Cosine similarity measures the angle between two vectors and ranges from minus one to one, where higher values mean more similar. Some systems use dot product or Euclidean distance instead, depending on how the embeddings were trained.\n\n---\n\n# AI Engineering Basics\n## Embeddings\nEmbeddings from different models are not compatible with each other. If an application changes its embedding model, all stored embeddings must be regenerated with the new model. Mixing vectors from different models in the same index will produce meaningless similarity scores.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nFinding the most similar vectors is called nearest neighbour search. An exact search compares the query against every stored vector, which becomes slow when there are millions of vectors. To stay fast, most vector databases use approximate nearest neighbour algorithms, commonly abbreviated as ANN.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nThe number of results returned by a similarity search is usually controlled by a parameter called k. Returning the top k results gives the application several candidate passages to work with. Choosing k involves a trade-off between recall and the amount of irrelevant text sent to the model.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nMetadata filtering lets an application restrict a search to vectors that match certain conditions. For example, a search might be limited to documents from a particular department or created after a given date. Filtering is important for both relevance and access control.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nVector search is not always the best retrieval method on its own. Keyword search methods such as BM25 are better at matching exact terms like product codes, names and error messages. Hybrid search combines keyword and vector results to get the strengths of both.\n\n---\n\n# AI Engineering Basics\n## Vector Databases and Similarity Search\nA reranker is a model that reorders an initial list of search results by relevance. Rerankers are slower than vector search but more accurate, so they are typically applied only to the top few dozen candidates. Using a reranker often improves the quality of retrieved context noticeably.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+                "inputParameters": {
+                    "keywords": [
+                        "vector",
+                        "databases",
+                        "similarity",
+                        "search"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 7,
+            "section": "Vector Databases and Similarity Search",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do embeddings, ANN search, and metadata help a vector database return the top-k most similar text results?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 7,
+            "section": "Vector Databases and Similarity Search",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Why do language models sometimes make up plausible but unsupported answers, and why is this risky in high-stakes situations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "126 paragraphs matched; showing 8.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nA typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nThe core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nGood AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nResponsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo.\n\n---\n\n# AI Engineering Basics\n## Prompts and Prompt Engineering\nA prompt is the input text given to a language model to tell it what to do. Prompt engineering is the practice of designing and refining prompts so that the model produces useful, accurate and consistent outputs. It is usually the first and cheapest lever an AI engineer has for improving a system.\n\n---\n\n# AI Engineering Basics\n## Retrieval-Augmented Generation (RAG)\nRetrieval-augmented generation, usually called RAG, is a pattern where an application retrieves relevant information and adds it to the prompt before the model generates an answer. RAG lets a model answer questions about private, specialised or recent information that it did not see during training. It is one of the most widely used patterns in AI engineering.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nNo current technique removes hallucinations completely. AI engineers should design systems assuming that some errors will occur and ensure that mistakes are caught or have limited impact. Human review remains important for high-risk outputs such as medical, legal and financial advice.",
+                "inputParameters": {
+                    "keywords": [
+                        "hallucinations and grounding",
+                        "hallucinations",
+                        "grounding",
+                        "ai",
+                        "engineering",
+                        "basics"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 8,
+            "section": "Hallucinations and Grounding",
+            "scenario": "fail_invalid_keywords",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Why do language models sometimes make up plausible but unsupported answers, and why is this risky in high-stakes situations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "output": "7 paragraphs matched; showing 7.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nA hallucination is an output from a language model that sounds plausible but is false, unsupported or invented. Examples include made-up citations, incorrect dates, fictional product features and quotes that were never said. Hallucinations are one of the biggest obstacles to using language models in high-stakes settings.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nHallucinations happen because language models generate statistically likely text rather than retrieving verified facts. When the model lacks the right knowledge, it may still produce a confident answer that fits the pattern of a correct one. Models are not inherently aware of the boundary between what they know and what they are guessing.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nGrounding means tying the model's answers to a trusted source of information. Retrieval-augmented generation is the most common grounding technique, because it provides the model with relevant source text. Tool calls that fetch live data from databases or APIs are another form of grounding.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nInstructions in the prompt can reduce hallucinations. Telling the model to answer only from the provided context and to admit uncertainty helps it avoid guessing. Asking the model to quote or cite the supporting passage makes unsupported claims easier to spot.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nLower sampling temperatures can reduce some random errors but do not eliminate hallucinations. A model can be confidently wrong even at temperature zero. Temperature controls randomness, not factual accuracy.\n\n---\n\n# AI Engineering Basics\n## Hallucinations and Grounding\nNo current technique removes hallucinations completely. AI engineers should design systems assuming that some errors will occur and ensure that mistakes are caught or have limited impact. Human review remains important for high-risk outputs such as medical, legal and financial advice.\n\n---\n\n# AI Engineering Basics\n## What AI Engineering Is\nAI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+                "inputParameters": {
+                    "keywords": [
+                        "hallucinations",
+                        "grounding"
+                    ]
+                }
+            }
+        ],
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 8,
+            "section": "Hallucinations and Grounding",
+            "scenario": "fail_irrelevant_results",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Why do language models sometimes make up plausible but unsupported answers, and why is this risky in high-stakes situations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 8,
+            "section": "Hallucinations and Grounding",
+            "scenario": "fail_no_tool_call",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    }
+]

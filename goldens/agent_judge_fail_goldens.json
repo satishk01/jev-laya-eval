@@ -1,0 +1,498 @@
+[
+    {
+        "input": "What does PII include in AI engineering, such as names, email addresses, phone numbers, and locations?",
+        "actual_output": "In AI engineering, PII usually refers to public infrastructure information, not personal data. It generally includes system logs, model weights, and server metadata rather than names, email addresses, phone numbers, or locations.",
+        "expected_output": "In AI engineering, PII stands for personally identifiable information. It includes names, email addresses, phone numbers, locations, and any other data that can identify a person.",
+        "retrieval_context": null,
+        "context": [
+            "AI applications frequently process personal and sensitive information, so privacy must be considered from the start. Personal data includes names, email addresses, phone numbers, locations and any information that can identify a person. Personally identifiable information is commonly abbreviated as PII.",
+            "Every piece of data sent to a hosted model leaves the application's own infrastructure. Engineers should understand how the provider stores, logs and uses that data. Many providers offer business terms stating that customer data will not be used to train their models, but these terms should be checked rather than assumed.",
+            "Data minimisation means sending only the data that is necessary for the task. If a model needs only a customer's question, there is no reason to include their full account record. Minimising data reduces both privacy risk and token cost.",
+            "Redaction and masking remove or replace sensitive values before data is sent to a model or stored in logs. For example, an email address might be replaced with a placeholder token. Some systems restore the original values after the model responds if they are needed in the final output.",
+            "Logs, traces and evaluation datasets can quietly accumulate sensitive data. Retention policies should define how long such data is kept and when it is deleted. Access to these records should be restricted to people who need it.",
+            "Access control is essential in retrieval systems. A RAG application must make sure users can retrieve only documents they are allowed to see. Applying permission filters at retrieval time prevents the model from leaking restricted content in its answers.",
+            "Fine-tuning on private data creates special risks. A model trained on sensitive records may reproduce fragments of that data in its outputs. Data used for training should be cleaned of sensitive information unless there is a strong reason and proper safeguards."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "section": "Privacy and Data Handling",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does PII include in AI engineering, such as names, email addresses, phone numbers, and locations?",
+        "actual_output": "PII is information related to a person. It includes some identifying details.",
+        "expected_output": "In AI engineering, PII stands for personally identifiable information. It includes names, email addresses, phone numbers, locations, and any other data that can identify a person.",
+        "retrieval_context": null,
+        "context": [
+            "AI applications frequently process personal and sensitive information, so privacy must be considered from the start. Personal data includes names, email addresses, phone numbers, locations and any information that can identify a person. Personally identifiable information is commonly abbreviated as PII.",
+            "Every piece of data sent to a hosted model leaves the application's own infrastructure. Engineers should understand how the provider stores, logs and uses that data. Many providers offer business terms stating that customer data will not be used to train their models, but these terms should be checked rather than assumed.",
+            "Data minimisation means sending only the data that is necessary for the task. If a model needs only a customer's question, there is no reason to include their full account record. Minimising data reduces both privacy risk and token cost.",
+            "Redaction and masking remove or replace sensitive values before data is sent to a model or stored in logs. For example, an email address might be replaced with a placeholder token. Some systems restore the original values after the model responds if they are needed in the final output.",
+            "Logs, traces and evaluation datasets can quietly accumulate sensitive data. Retention policies should define how long such data is kept and when it is deleted. Access to these records should be restricted to people who need it.",
+            "Access control is essential in retrieval systems. A RAG application must make sure users can retrieve only documents they are allowed to see. Applying permission filters at retrieval time prevents the model from leaking restricted content in its answers.",
+            "Fine-tuning on private data creates special risks. A model trained on sensitive records may reproduce fragments of that data in its outputs. Data used for training should be cleaned of sensitive information unless there is a strong reason and proper safeguards."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "section": "Privacy and Data Handling",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between temperature and top-p in AI text sampling?",
+        "actual_output": "Temperature and top-p are basically the same setting: both deterministically choose the single most likely next token, just on different hardware. A higher temperature makes the model more accurate and less random, while lowering top-p expands the pool of unlikely tokens to increase creativity.",
+        "expected_output": "Temperature changes how sharply the model prefers high-probability tokens: low temperature makes output more predictable, while high temperature makes it more varied and creative. Top-p instead limits sampling to the smallest set of tokens whose total probability reaches a chosen threshold, cutting off very unlikely options while keeping some randomness. In practice, people usually adjust one or the other, not both.",
+        "retrieval_context": null,
+        "context": [
+            "When a model generates text, it produces a probability for every token in its vocabulary at each step. Sampling is the process of choosing which token to output from that probability distribution. Sampling parameters control how random or predictable the resulting text will be.",
+            "Temperature is the most common sampling parameter. A low temperature makes the model favour the most probable tokens, producing more focused and repeatable output. A high temperature flattens the distribution, making less likely tokens more probable and the output more varied and creative.",
+            "A temperature of zero, or very close to zero, approximates greedy decoding, where the single most likely token is chosen each time. Greedy decoding is useful for tasks that need consistency, such as classification or data extraction. Even at temperature zero, outputs from hosted APIs are not always perfectly identical because of hardware and batching effects.",
+            "Top-p sampling, also called nucleus sampling, restricts choices to the smallest set of tokens whose combined probability reaches a threshold p. For example, with a top-p of 0.9, the model samples only from the tokens that together make up ninety percent of the probability. This cuts off the long tail of unlikely tokens while keeping some variety.",
+            "Providers usually recommend adjusting either temperature or top-p, but not both at the same time. Changing both makes it harder to understand which setting caused a change in behaviour. For most applications, adjusting temperature alone is sufficient.",
+            "Low temperatures suit factual question answering, code generation and structured extraction. Higher temperatures suit brainstorming, creative writing and generating diverse alternatives. There is no universally best value, so engineers should test settings on their own tasks.",
+            "Sampling settings interact with evaluation. If a system uses a non-zero temperature, the same test input may pass once and fail the next time. Running each test case several times and looking at the pass rate gives a more honest picture of reliability."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "section": "Sampling: Temperature and Top-p",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between temperature and top-p in AI text sampling?",
+        "actual_output": "They are two parameters used to control how a language model generates text. Both can affect how varied the output feels.",
+        "expected_output": "Temperature changes how sharply the model prefers high-probability tokens: low temperature makes output more predictable, while high temperature makes it more varied and creative. Top-p instead limits sampling to the smallest set of tokens whose total probability reaches a chosen threshold, cutting off very unlikely options while keeping some randomness. In practice, people usually adjust one or the other, not both.",
+        "retrieval_context": null,
+        "context": [
+            "When a model generates text, it produces a probability for every token in its vocabulary at each step. Sampling is the process of choosing which token to output from that probability distribution. Sampling parameters control how random or predictable the resulting text will be.",
+            "Temperature is the most common sampling parameter. A low temperature makes the model favour the most probable tokens, producing more focused and repeatable output. A high temperature flattens the distribution, making less likely tokens more probable and the output more varied and creative.",
+            "A temperature of zero, or very close to zero, approximates greedy decoding, where the single most likely token is chosen each time. Greedy decoding is useful for tasks that need consistency, such as classification or data extraction. Even at temperature zero, outputs from hosted APIs are not always perfectly identical because of hardware and batching effects.",
+            "Top-p sampling, also called nucleus sampling, restricts choices to the smallest set of tokens whose combined probability reaches a threshold p. For example, with a top-p of 0.9, the model samples only from the tokens that together make up ninety percent of the probability. This cuts off the long tail of unlikely tokens while keeping some variety.",
+            "Providers usually recommend adjusting either temperature or top-p, but not both at the same time. Changing both makes it harder to understand which setting caused a change in behaviour. For most applications, adjusting temperature alone is sufficient.",
+            "Low temperatures suit factual question answering, code generation and structured extraction. Higher temperatures suit brainstorming, creative writing and generating diverse alternatives. There is no universally best value, so engineers should test settings on their own tasks.",
+            "Sampling settings interact with evaluation. If a system uses a non-zero temperature, the same test input may pass once and fail the next time. Running each test case several times and looking at the pass rate gives a more honest picture of reliability."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "section": "Sampling: Temperature and Top-p",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between sliding-window memory and summarization memory in an AI chat system?",
+        "actual_output": "Sliding-window memory stores the entire conversation indefinitely, while summarization memory deletes old messages completely to save tokens. As a result, sliding windows preserve long-term details better than summaries and usually use more context over time.",
+        "expected_output": "Sliding-window memory keeps only the most recent messages and drops older ones, which is simple and keeps token use limited. Summarization memory compresses older messages into a short summary while keeping recent messages in full. This helps preserve important earlier facts better than a sliding window, but some detail is still lost.",
+        "retrieval_context": null,
+        "context": [
+            "Language models are stateless, which means they do not remember anything between separate API requests. To create the experience of an ongoing conversation, the application must send the relevant conversation history with every new request. This history usually consists of earlier user and assistant messages.",
+            "Short-term memory refers to the conversation history kept within the current session. The simplest approach is to send the entire history every time. This works for short conversations but eventually exceeds the context window and becomes expensive.",
+            "A sliding window keeps only the most recent messages and drops older ones. This approach is simple and keeps the token count bounded. Its weakness is that important details from early in the conversation may be forgotten.",
+            "Summarisation memory periodically compresses older messages into a short summary. The summary is included in place of the full older messages, while recent messages are kept in full. This preserves key facts while saving tokens, although some detail is inevitably lost.",
+            "Long-term memory stores information across sessions so the assistant can recall it later. Examples include a user's preferences, past decisions or important facts they have shared. Long-term memories are often stored in a database and retrieved when relevant, sometimes using embeddings.",
+            "Users should be able to see and control what an assistant remembers about them. Clear controls for viewing, editing and deleting memories support privacy and trust. Many privacy regulations also require that personal data can be deleted on request.",
+            "Memory management directly affects cost and latency. Every token of history sent with a request is paid for and processed again. Efficient memory strategies keep conversations coherent without sending unnecessary text."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "section": "Memory and Conversation History Management",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between sliding-window memory and summarization memory in an AI chat system?",
+        "actual_output": "They are two different ways a chat system can handle past conversation. One focuses on recent context, while the other uses a shorter form of earlier content.",
+        "expected_output": "Sliding-window memory keeps only the most recent messages and drops older ones, which is simple and keeps token use limited. Summarization memory compresses older messages into a short summary while keeping recent messages in full. This helps preserve important earlier facts better than a sliding window, but some detail is still lost.",
+        "retrieval_context": null,
+        "context": [
+            "Language models are stateless, which means they do not remember anything between separate API requests. To create the experience of an ongoing conversation, the application must send the relevant conversation history with every new request. This history usually consists of earlier user and assistant messages.",
+            "Short-term memory refers to the conversation history kept within the current session. The simplest approach is to send the entire history every time. This works for short conversations but eventually exceeds the context window and becomes expensive.",
+            "A sliding window keeps only the most recent messages and drops older ones. This approach is simple and keeps the token count bounded. Its weakness is that important details from early in the conversation may be forgotten.",
+            "Summarisation memory periodically compresses older messages into a short summary. The summary is included in place of the full older messages, while recent messages are kept in full. This preserves key facts while saving tokens, although some detail is inevitably lost.",
+            "Long-term memory stores information across sessions so the assistant can recall it later. Examples include a user's preferences, past decisions or important facts they have shared. Long-term memories are often stored in a database and retrieved when relevant, sometimes using embeddings.",
+            "Users should be able to see and control what an assistant remembers about them. Clear controls for viewing, editing and deleting memories support privacy and trust. Many privacy regulations also require that personal data can be deleted on request.",
+            "Memory management directly affects cost and latency. Every token of history sent with a request is paid for and processed again. Efficient memory strategies keep conversations coherent without sending unnecessary text."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "section": "Memory and Conversation History Management",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "In AI observability, what does a trace capture for a single request, including spans?",
+        "actual_output": "A trace in AI observability only records the final model output for a request and does not include the intermediate steps. Spans are separate traces rather than parts of one trace, so they are not nested and do not show relationships between retrievals, tool calls, or model invocations.",
+        "expected_output": "In AI observability, a trace captures everything that happened while handling a single request. It is made up of spans, where each span represents one step like a retrieval, model call, or tool execution, and the spans are nested to show how those steps fit inside larger operations.",
+        "retrieval_context": null,
+        "context": [
+            "Observability is the ability to understand what a system is doing internally by examining the data it produces. For AI applications, observability means recording prompts, responses, tool calls, latency, token usage and errors. Without it, engineers cannot easily explain why a model gave a particular answer.",
+            "A trace is a record of everything that happened while handling a single request. A trace is made up of spans, where each span represents one step such as a retrieval, a model call or a tool execution. Spans are nested to show which steps happened inside which larger operations.",
+            "For a RAG application, a trace might show the user question, the rewritten query, the retrieved chunks, the final prompt and the model's answer. Seeing all of these together makes it easy to tell whether a bad answer came from poor retrieval or poor generation. This kind of root-cause analysis is the main benefit of tracing.",
+            "Each model call in a trace usually records the model name, parameters, input tokens, output tokens, latency and cost. Aggregating these values across many traces shows overall usage and spending. Sudden changes in these numbers often signal a bug or a change in user behaviour.",
+            "Observability tools often let teams attach scores to traces. Scores can come from user feedback such as thumbs up or thumbs down, from automated evaluators, or from human reviewers. Linking quality scores to traces connects evaluation directly to real usage.",
+            "Production traces are a valuable source of test cases. Interesting or failing traces can be added to a golden dataset so that the problem is checked in future evaluations. This creates a feedback loop between production monitoring and offline testing.",
+            "Because traces contain prompts and responses, they may include personal or sensitive data. Teams should apply masking, access controls and retention limits to trace data. Observability must be balanced with the privacy obligations covered in the privacy section."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 4,
+            "section": "Observability and Tracing",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "In AI observability, what does a trace capture for a single request, including spans?",
+        "actual_output": "A trace captures information about a single request in an AI system. It can help show what happened during processing.",
+        "expected_output": "In AI observability, a trace captures everything that happened while handling a single request. It is made up of spans, where each span represents one step like a retrieval, model call, or tool execution, and the spans are nested to show how those steps fit inside larger operations.",
+        "retrieval_context": null,
+        "context": [
+            "Observability is the ability to understand what a system is doing internally by examining the data it produces. For AI applications, observability means recording prompts, responses, tool calls, latency, token usage and errors. Without it, engineers cannot easily explain why a model gave a particular answer.",
+            "A trace is a record of everything that happened while handling a single request. A trace is made up of spans, where each span represents one step such as a retrieval, a model call or a tool execution. Spans are nested to show which steps happened inside which larger operations.",
+            "For a RAG application, a trace might show the user question, the rewritten query, the retrieved chunks, the final prompt and the model's answer. Seeing all of these together makes it easy to tell whether a bad answer came from poor retrieval or poor generation. This kind of root-cause analysis is the main benefit of tracing.",
+            "Each model call in a trace usually records the model name, parameters, input tokens, output tokens, latency and cost. Aggregating these values across many traces shows overall usage and spending. Sudden changes in these numbers often signal a bug or a change in user behaviour.",
+            "Observability tools often let teams attach scores to traces. Scores can come from user feedback such as thumbs up or thumbs down, from automated evaluators, or from human reviewers. Linking quality scores to traces connects evaluation directly to real usage.",
+            "Production traces are a valuable source of test cases. Interesting or failing traces can be added to a golden dataset so that the problem is checked in future evaluations. This creates a feedback loop between production monitoring and offline testing.",
+            "Because traces contain prompts and responses, they may include personal or sensitive data. Teams should apply masking, access controls and retention limits to trace data. Observability must be balanced with the privacy obligations covered in the privacy section."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 4,
+            "section": "Observability and Tracing",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is AI engineering when building reliable software with pretrained LLMs using prompts, retrieval, tools, and evals?",
+        "actual_output": "AI engineering is the discipline of training brand-new language models from scratch instead of relying on pretrained ones. It mainly avoids prompts, retrieval, and external tools because reliable systems should come only from the model itself, not from added components or evaluation pipelines.",
+        "expected_output": "AI engineering is the practice of building reliable software products on top of pretrained models, especially large language models, rather than training models from scratch. It uses core building blocks like prompts, retrieval systems, tools, and evaluation pipelines to connect models with data and actions for real-world tasks. The goal is to create useful, trustworthy systems in production by improving quality through systematic testing, while also balancing cost and latency.",
+        "retrieval_context": null,
+        "context": [
+            "AI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+            "The discipline sits between traditional software engineering and machine learning research. It borrows testing, version control, monitoring and deployment practices from software engineering. It borrows ideas such as evaluation datasets, metrics and error analysis from machine learning.",
+            "A typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.",
+            "The core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.",
+            "A key difference from traditional software is that model outputs are probabilistic rather than fully deterministic. The same input can produce different outputs, and small wording changes in a prompt can change results noticeably. Because of this, AI engineers rely heavily on systematic testing with many examples rather than a handful of manual checks.",
+            "Good AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.",
+            "Responsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 5,
+            "section": "What AI Engineering Is",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is AI engineering when building reliable software with pretrained LLMs using prompts, retrieval, tools, and evals?",
+        "actual_output": "AI engineering is about using AI models in software applications. It focuses on making systems work well in practice.",
+        "expected_output": "AI engineering is the practice of building reliable software products on top of pretrained models, especially large language models, rather than training models from scratch. It uses core building blocks like prompts, retrieval systems, tools, and evaluation pipelines to connect models with data and actions for real-world tasks. The goal is to create useful, trustworthy systems in production by improving quality through systematic testing, while also balancing cost and latency.",
+        "retrieval_context": null,
+        "context": [
+            "AI engineering is the practice of building reliable software products on top of pretrained machine learning models, especially large language models. An AI engineer usually does not train a model from scratch, because that requires huge datasets, specialised hardware and a dedicated research team. Instead, an AI engineer connects existing models to data, tools and user interfaces to solve a concrete problem.",
+            "The discipline sits between traditional software engineering and machine learning research. It borrows testing, version control, monitoring and deployment practices from software engineering. It borrows ideas such as evaluation datasets, metrics and error analysis from machine learning.",
+            "A typical AI engineering task might be building a chatbot that answers questions about a company's internal documents. Another common task is extracting structured fields, such as names and dates, from unstructured text like emails or invoices. A third example is building an assistant that can call software tools to complete multi-step tasks on behalf of a user.",
+            "The core building blocks of AI engineering include prompts, models, retrieval systems, tools and evaluation pipelines. Prompts tell the model what to do, and retrieval systems supply the model with relevant information it did not learn during training. Tools let the model take actions or fetch live data, while evaluation pipelines measure whether the whole system behaves well.",
+            "A key difference from traditional software is that model outputs are probabilistic rather than fully deterministic. The same input can produce different outputs, and small wording changes in a prompt can change results noticeably. Because of this, AI engineers rely heavily on systematic testing with many examples rather than a handful of manual checks.",
+            "Good AI engineering is iterative, starting with a simple baseline and improving it based on measured results. Engineers typically try prompting first, then add retrieval or tools, and only consider fine-tuning when simpler approaches fall short. Throughout this process, they track quality, latency and cost together, because improving one often affects the others.",
+            "Responsible AI engineering also includes thinking about safety, privacy and the impact of mistakes on users. A system that gives medical, legal or financial information needs stronger safeguards than one that suggests recipe ideas. Ultimately, the goal of AI engineering is useful, trustworthy behaviour in production, not just an impressive demo."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 5,
+            "section": "What AI Engineering Is",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does an AI model’s context window include, and how do token limits affect requests?",
+        "actual_output": "An AI model’s context window only includes the user’s latest message and never includes system prompts, prior conversation, retrieved files, or tool outputs. Token limits affect only pricing, not whether a request succeeds, and max tokens determines how much context the model can read rather than how long its reply can be.",
+        "expected_output": "An AI model’s context window includes everything it sees in one request, such as the system prompt, conversation history, retrieved documents, tool results, and its own output. If the total tokens go over the context window, the request can fail or older content must be removed. Separate token limits, often called max tokens, control how long the model’s reply can be, and if that limit is too low, the answer may get cut off.",
+        "retrieval_context": null,
+        "context": [
+            "The context window is the maximum number of tokens a model can consider at one time. It includes everything the model sees in a single request: the system prompt, the conversation history, any retrieved documents, tool results and the model's own output. If the total exceeds the context window, the request will fail or older content must be removed.",
+            "Context windows vary widely between models, ranging from a few thousand tokens to hundreds of thousands or more. A larger context window lets an application include longer documents or longer conversations in a single request. However, a larger window does not guarantee that the model will use all of that information equally well.",
+            "Research and practical experience show that models sometimes pay less attention to information buried in the middle of a very long context. This effect is often called the lost in the middle problem. Placing the most important instructions and facts near the beginning or end of the prompt can help.",
+            "Filling the context window also has practical costs. More input tokens mean higher cost per request and usually higher latency before the first output token appears. For this reason, engineers try to include only the information that is actually relevant to the current task.",
+            "The context window is separate from the model's long-term knowledge stored in its parameters. Anything placed in the context window is available only for that single request unless the application sends it again. A model does not remember earlier conversations unless the application includes them in the new request.",
+            "The maximum output length is often configured separately from the context window. Many APIs have a parameter, often called max tokens, that limits how many tokens the model may generate in its reply. If this limit is too low, the answer may be cut off mid-sentence.",
+            "Engineers manage context with techniques such as truncation, summarisation and retrieval. Truncation drops the oldest or least relevant content, while summarisation compresses earlier content into a shorter form. Retrieval avoids loading everything at once by fetching only the pieces most relevant to the current question."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 6,
+            "section": "Context Windows",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does an AI model’s context window include, and how do token limits affect requests?",
+        "actual_output": "The context window is the amount of information the model can work with at once. Token limits matter because they can restrict how much the model can handle or say.",
+        "expected_output": "An AI model’s context window includes everything it sees in one request, such as the system prompt, conversation history, retrieved documents, tool results, and its own output. If the total tokens go over the context window, the request can fail or older content must be removed. Separate token limits, often called max tokens, control how long the model’s reply can be, and if that limit is too low, the answer may get cut off.",
+        "retrieval_context": null,
+        "context": [
+            "The context window is the maximum number of tokens a model can consider at one time. It includes everything the model sees in a single request: the system prompt, the conversation history, any retrieved documents, tool results and the model's own output. If the total exceeds the context window, the request will fail or older content must be removed.",
+            "Context windows vary widely between models, ranging from a few thousand tokens to hundreds of thousands or more. A larger context window lets an application include longer documents or longer conversations in a single request. However, a larger window does not guarantee that the model will use all of that information equally well.",
+            "Research and practical experience show that models sometimes pay less attention to information buried in the middle of a very long context. This effect is often called the lost in the middle problem. Placing the most important instructions and facts near the beginning or end of the prompt can help.",
+            "Filling the context window also has practical costs. More input tokens mean higher cost per request and usually higher latency before the first output token appears. For this reason, engineers try to include only the information that is actually relevant to the current task.",
+            "The context window is separate from the model's long-term knowledge stored in its parameters. Anything placed in the context window is available only for that single request unless the application sends it again. A model does not remember earlier conversations unless the application includes them in the new request.",
+            "The maximum output length is often configured separately from the context window. Many APIs have a parameter, often called max tokens, that limits how many tokens the model may generate in its reply. If this limit is too low, the answer may be cut off mid-sentence.",
+            "Engineers manage context with techniques such as truncation, summarisation and retrieval. Truncation drops the oldest or least relevant content, while summarisation compresses earlier content into a shorter form. Retrieval avoids loading everything at once by fetching only the pieces most relevant to the current question."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 6,
+            "section": "Context Windows",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do embeddings, ANN search, and metadata help a vector database return the top-k most similar text results?",
+        "actual_output": "A vector database stores the raw text only, not embeddings, and compares queries by exact keyword matching. ANN search guarantees an exhaustive scan of every vector to find the single perfect result, while metadata is mainly used to generate embeddings rather than filter results.",
+        "expected_output": "A vector database stores embeddings, which are numerical representations of text, along with the original text and metadata like source, date, or author. When a query arrives, it is turned into a vector and ANN search quickly finds the nearest stored vectors, usually returning the top-k most similar matches instead of checking every vector exactly. Metadata helps by filtering results to only those that meet conditions, such as a certain department or date range, which improves relevance and access control.",
+        "retrieval_context": null,
+        "context": [
+            "A vector database is a storage system designed to save embeddings and quickly find the vectors most similar to a query vector. Each stored vector is usually accompanied by the original text and metadata such as source, date or author. When a query arrives, the database returns the closest matches along with their text and metadata.",
+            "Finding the most similar vectors is called nearest neighbour search. An exact search compares the query against every stored vector, which becomes slow when there are millions of vectors. To stay fast, most vector databases use approximate nearest neighbour algorithms, commonly abbreviated as ANN.",
+            "Approximate nearest neighbour algorithms trade a small amount of accuracy for a large gain in speed. A popular algorithm is HNSW, which stands for hierarchical navigable small world graphs. Other approaches include inverted file indexes and product quantisation, which compresses vectors to save memory.",
+            "The number of results returned by a similarity search is usually controlled by a parameter called k. Returning the top k results gives the application several candidate passages to work with. Choosing k involves a trade-off between recall and the amount of irrelevant text sent to the model.",
+            "Metadata filtering lets an application restrict a search to vectors that match certain conditions. For example, a search might be limited to documents from a particular department or created after a given date. Filtering is important for both relevance and access control.",
+            "Vector search is not always the best retrieval method on its own. Keyword search methods such as BM25 are better at matching exact terms like product codes, names and error messages. Hybrid search combines keyword and vector results to get the strengths of both.",
+            "A reranker is a model that reorders an initial list of search results by relevance. Rerankers are slower than vector search but more accurate, so they are typically applied only to the top few dozen candidates. Using a reranker often improves the quality of retrieved context noticeably."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 7,
+            "section": "Vector Databases and Similarity Search",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do embeddings, ANN search, and metadata help a vector database return the top-k most similar text results?",
+        "actual_output": "A vector database can help find similar text by comparing a query to stored data and returning the closest matches. Metadata can also be useful for organizing results.",
+        "expected_output": "A vector database stores embeddings, which are numerical representations of text, along with the original text and metadata like source, date, or author. When a query arrives, it is turned into a vector and ANN search quickly finds the nearest stored vectors, usually returning the top-k most similar matches instead of checking every vector exactly. Metadata helps by filtering results to only those that meet conditions, such as a certain department or date range, which improves relevance and access control.",
+        "retrieval_context": null,
+        "context": [
+            "A vector database is a storage system designed to save embeddings and quickly find the vectors most similar to a query vector. Each stored vector is usually accompanied by the original text and metadata such as source, date or author. When a query arrives, the database returns the closest matches along with their text and metadata.",
+            "Finding the most similar vectors is called nearest neighbour search. An exact search compares the query against every stored vector, which becomes slow when there are millions of vectors. To stay fast, most vector databases use approximate nearest neighbour algorithms, commonly abbreviated as ANN.",
+            "Approximate nearest neighbour algorithms trade a small amount of accuracy for a large gain in speed. A popular algorithm is HNSW, which stands for hierarchical navigable small world graphs. Other approaches include inverted file indexes and product quantisation, which compresses vectors to save memory.",
+            "The number of results returned by a similarity search is usually controlled by a parameter called k. Returning the top k results gives the application several candidate passages to work with. Choosing k involves a trade-off between recall and the amount of irrelevant text sent to the model.",
+            "Metadata filtering lets an application restrict a search to vectors that match certain conditions. For example, a search might be limited to documents from a particular department or created after a given date. Filtering is important for both relevance and access control.",
+            "Vector search is not always the best retrieval method on its own. Keyword search methods such as BM25 are better at matching exact terms like product codes, names and error messages. Hybrid search combines keyword and vector results to get the strengths of both.",
+            "A reranker is a model that reorders an initial list of search results by relevance. Rerankers are slower than vector search but more accurate, so they are typically applied only to the top few dozen candidates. Using a reranker often improves the quality of retrieved context noticeably."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 7,
+            "section": "Vector Databases and Similarity Search",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Why do language models sometimes make up plausible but unsupported answers, and why is this risky in high-stakes situations?",
+        "actual_output": "Language models generally do not invent unsupported answers because they retrieve verified facts from reliable databases before responding. In high-stakes situations this is usually not a serious risk, since their confidence is a strong indicator that the information is correct.",
+        "expected_output": "Language models sometimes make up plausible but unsupported answers because they generate statistically likely text instead of retrieving verified facts. If they lack the right knowledge, they may still produce a confident response without knowing they are guessing. This is risky in high-stakes settings because false information can lead to harmful mistakes, especially in areas like medical, legal, and financial advice.",
+        "retrieval_context": null,
+        "context": [
+            "A hallucination is an output from a language model that sounds plausible but is false, unsupported or invented. Examples include made-up citations, incorrect dates, fictional product features and quotes that were never said. Hallucinations are one of the biggest obstacles to using language models in high-stakes settings.",
+            "Hallucinations happen because language models generate statistically likely text rather than retrieving verified facts. When the model lacks the right knowledge, it may still produce a confident answer that fits the pattern of a correct one. Models are not inherently aware of the boundary between what they know and what they are guessing.",
+            "Grounding means tying the model's answers to a trusted source of information. Retrieval-augmented generation is the most common grounding technique, because it provides the model with relevant source text. Tool calls that fetch live data from databases or APIs are another form of grounding.",
+            "Instructions in the prompt can reduce hallucinations. Telling the model to answer only from the provided context and to admit uncertainty helps it avoid guessing. Asking the model to quote or cite the supporting passage makes unsupported claims easier to spot.",
+            "Lower sampling temperatures can reduce some random errors but do not eliminate hallucinations. A model can be confidently wrong even at temperature zero. Temperature controls randomness, not factual accuracy.",
+            "Faithfulness is a metric that measures whether an answer's claims are supported by the provided context. A faithful answer may still be wrong if the context itself is wrong. Correctness, by contrast, measures whether the answer matches the true answer.",
+            "No current technique removes hallucinations completely. AI engineers should design systems assuming that some errors will occur and ensure that mistakes are caught or have limited impact. Human review remains important for high-risk outputs such as medical, legal and financial advice."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 8,
+            "section": "Hallucinations and Grounding",
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Why do language models sometimes make up plausible but unsupported answers, and why is this risky in high-stakes situations?",
+        "actual_output": "Sometimes models give answers that seem right even when the situation is complicated. This can be risky in important contexts because mistakes may matter.",
+        "expected_output": "Language models sometimes make up plausible but unsupported answers because they generate statistically likely text instead of retrieving verified facts. If they lack the right knowledge, they may still produce a confident response without knowing they are guessing. This is risky in high-stakes settings because false information can lead to harmful mistakes, especially in areas like medical, legal, and financial advice.",
+        "retrieval_context": null,
+        "context": [
+            "A hallucination is an output from a language model that sounds plausible but is false, unsupported or invented. Examples include made-up citations, incorrect dates, fictional product features and quotes that were never said. Hallucinations are one of the biggest obstacles to using language models in high-stakes settings.",
+            "Hallucinations happen because language models generate statistically likely text rather than retrieving verified facts. When the model lacks the right knowledge, it may still produce a confident answer that fits the pattern of a correct one. Models are not inherently aware of the boundary between what they know and what they are guessing.",
+            "Grounding means tying the model's answers to a trusted source of information. Retrieval-augmented generation is the most common grounding technique, because it provides the model with relevant source text. Tool calls that fetch live data from databases or APIs are another form of grounding.",
+            "Instructions in the prompt can reduce hallucinations. Telling the model to answer only from the provided context and to admit uncertainty helps it avoid guessing. Asking the model to quote or cite the supporting passage makes unsupported claims easier to spot.",
+            "Lower sampling temperatures can reduce some random errors but do not eliminate hallucinations. A model can be confidently wrong even at temperature zero. Temperature controls randomness, not factual accuracy.",
+            "Faithfulness is a metric that measures whether an answer's claims are supported by the provided context. A faithful answer may still be wrong if the context itself is wrong. Correctness, by contrast, measures whether the answer matches the true answer.",
+            "No current technique removes hallucinations completely. AI engineers should design systems assuming that some errors will occur and ensure that mistakes are caught or have limited impact. Human review remains important for high-risk outputs such as medical, legal and financial advice."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 8,
+            "section": "Hallucinations and Grounding",
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    }
+]

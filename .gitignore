@@ -1,0 +1,11 @@
+# Secrets
+.env
+
+# Python and uv
+.venv/
+__pycache__/
+*.pyc
+
+# DeepEval run output
+deepeval_results/
+.deepeval/

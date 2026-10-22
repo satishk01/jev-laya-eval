@@ -1,0 +1,226 @@
+[
+    {
+        "input": "What does PII include in AI engineering, such as names, email addresses, phone numbers, and locations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "section": "Privacy and Data Handling",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between temperature and top-p in AI text sampling?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "section": "Sampling: Temperature and Top-p",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the difference between sliding-window memory and summarization memory in an AI chat system?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "section": "Memory and Conversation History Management",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "In AI observability, what does a trace capture for a single request, including spans?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 4,
+            "section": "Observability and Tracing",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is AI engineering when building reliable software with pretrained LLMs using prompts, retrieval, tools, and evals?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 5,
+            "section": "What AI Engineering Is",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What does an AI model’s context window include, and how do token limits affect requests?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 6,
+            "section": "Context Windows",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do embeddings, ANN search, and metadata help a vector database return the top-k most similar text results?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 7,
+            "section": "Vector Databases and Similarity Search",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Why do language models sometimes make up plausible but unsupported answers, and why is this risky in high-stakes situations?",
+        "actual_output": null,
+        "expected_output": null,
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 8,
+            "section": "Hallucinations and Grounding",
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    }
+]

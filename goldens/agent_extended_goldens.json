@@ -1,0 +1,127 @@
+[
+    {
+        "input": "What is the capital of France?",
+        "actual_output": null,
+        "expected_output": "Sorry I cannot help with that.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 9,
+            "scenario": "refuse_out_of_scope",
+            "expected_verdict": "pass",
+            "kind": "refusal"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How deep is the Mariana Trench?",
+        "actual_output": null,
+        "expected_output": "Sorry I cannot help with that.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 10,
+            "scenario": "refuse_out_of_scope",
+            "expected_verdict": "pass",
+            "kind": "refusal"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is the capital of France?",
+        "actual_output": "The capital of France is Paris. It has been the political and cultural centre of the country for centuries.",
+        "expected_output": "Sorry I cannot help with that.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION",
+                "inputParameters": {
+                    "keywords": [
+                        "capital",
+                        "france"
+                    ]
+                },
+                "output": "No paragraphs matched: capital, france"
+            }
+        ],
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 9,
+            "scenario": "fail_answered_anyway",
+            "expected_verdict": "fail",
+            "kind": "refusal"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do embeddings, vector databases, and chunking work together in a RAG system?",
+        "actual_output": null,
+        "expected_output": "Documents are split into chunks, each chunk is turned into an embedding (a numeric vector representing its meaning), and the embeddings are stored in a vector database. At query time the user's question is embedded, the database returns the most similar chunks, and those chunks are added to the prompt so the model's answer is grounded in the retrieved text.",
+        "retrieval_context": null,
+        "context": [
+            "An embedding is a list of numbers, called a vector, that represents the meaning of a piece of text. Texts with similar meanings produce vectors that are close together in this numerical space. Texts with unrelated meanings produce vectors that are far apart.",
+            "A vector database is a storage system designed to save embeddings and quickly find the vectors most similar to a query vector. Each stored vector is usually accompanied by the original text and metadata such as source, date or author. When a query arrives, the database returns the closest matches along with their text and metadata.",
+            "Chunking is the process of splitting long documents into smaller pieces before embedding them. Each chunk is embedded and stored separately so that search can return only the relevant portion of a document. Chunking is necessary because embedding models have input limits and because whole documents are often too long to include in a prompt.",
+            "Retrieval-augmented generation, usually called RAG, is a pattern where an application retrieves relevant information and adds it to the prompt before the model generates an answer. RAG lets a model answer questions about private, specialised or recent information that it did not see during training. It is one of the most widely used patterns in AI engineering."
+        ],
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": [
+            {
+                "name": "search_knowledge",
+                "type": "FUNCTION"
+            }
+        ],
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 11,
+            "section": "Embeddings / Vector Databases / Chunking / RAG",
+            "scenario": "pass",
+            "expected_verdict": "pass",
+            "kind": "multipart"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    }
+]

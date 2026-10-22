@@ -1,0 +1,200 @@
+[
+    {
+        "input": "What is an LLM, incl. training data, params, and main NLP use-cases?",
+        "actual_output": "A large language model is a type of AI that learns from massive text datasets so it can understand and generate human-like language, often by predicting likely next tokens. The data used to train it can include web pages, books, and documents, while the parameters are the learned weights inside the model that capture those language patterns. Typical NLP applications are chat assistants, question answering, summarization, translation, and text generation.",
+        "expected_output": "An LLM, or large language model, is an AI system trained on huge amounts of text to learn patterns in language and predict the next word or token. Its training data usually comes from books, websites, articles, and other written sources, and its parameters are the internal numerical weights the model adjusts during training to store what it has learned. Common NLP uses include answering questions, summarizing text, translating languages, generating content, and powering chatbots.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is an LLM, incl. training data, params, and main NLP use-cases?",
+        "actual_output": "An LLM is a small rule-based program that does not learn from data and instead follows hand-written grammar rules. Its parameters are just the number of documents in its training set, and it is mainly used for image editing rather than language tasks like translation or summarization.",
+        "expected_output": "An LLM, or large language model, is an AI system trained on huge amounts of text to learn patterns in language and predict the next word or token. Its training data usually comes from books, websites, articles, and other written sources, and its parameters are the internal numerical weights the model adjusts during training to store what it has learned. Common NLP uses include answering questions, summarizing text, translating languages, generating content, and powering chatbots.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "What is an LLM, incl. training data, params, and main NLP use-cases?",
+        "actual_output": "An LLM is an AI model used for language-related tasks. It can help generate text and respond to prompts.",
+        "expected_output": "An LLM, or large language model, is an AI system trained on huge amounts of text to learn patterns in language and predict the next word or token. Its training data usually comes from books, websites, articles, and other written sources, and its parameters are the internal numerical weights the model adjusts during training to store what it has learned. Common NLP uses include answering questions, summarizing text, translating languages, generating content, and powering chatbots.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 1,
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do AI tokens segment text, affect context limits, and influence model cost?",
+        "actual_output": "Tokens are the chunks of text an AI works with, often including parts of words and symbols instead of full sentences. The maximum context size is counted in tokens, so a long prompt or chat history takes up room and reduces how much the model can respond with. Pricing typically depends on how many tokens you send in and get back, which means larger token counts usually cost more.",
+        "expected_output": "AI models read and generate text as tokens, which are small pieces of text such as words, subwords, punctuation, or spaces rather than whole sentences. A model’s context limit is measured in tokens, so longer prompts and conversation history use up that budget and leave fewer tokens available for the model’s reply. Cost is also usually based on the number of input and output tokens processed, so more tokens generally means higher usage cost.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do AI tokens segment text, affect context limits, and influence model cost?",
+        "actual_output": "Tokens are whole sentences that the model compresses before reading, so the number of words matters more than the number of tokens. Context limits are usually measured in characters, and using more tokens lowers the price because the model can batch them more efficiently.",
+        "expected_output": "AI models read and generate text as tokens, which are small pieces of text such as words, subwords, punctuation, or spaces rather than whole sentences. A model’s context limit is measured in tokens, so longer prompts and conversation history use up that budget and leave fewer tokens available for the model’s reply. Cost is also usually based on the number of input and output tokens processed, so more tokens generally means higher usage cost.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "How do AI tokens segment text, affect context limits, and influence model cost?",
+        "actual_output": "Tokens are pieces of text that AI models use when processing language. They matter for how models handle text.",
+        "expected_output": "AI models read and generate text as tokens, which are small pieces of text such as words, subwords, punctuation, or spaces rather than whole sentences. A model’s context limit is measured in tokens, so longer prompts and conversation history use up that budget and leave fewer tokens available for the model’s reply. Cost is also usually based on the number of input and output tokens processed, so more tokens generally means higher usage cost.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 2,
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Explain how retrieval + generation interact in RAG systems to improve LLM factual accuracy.",
+        "actual_output": "Retrieval-augmented generation works by first finding useful pieces of information related to the query, then giving those results to the language model as context for writing its response. Because the model can base its answer on retrieved evidence instead of only its internal training knowledge, it is more likely to give accurate and up-to-date facts.",
+        "expected_output": "In a RAG system, the retrieval step first looks up relevant documents or passages from an external knowledge source based on the user’s question. The generation step then uses that retrieved context to help the language model produce an answer grounded in those sources. This improves factual accuracy because the model is not relying only on what it memorized during training, and it can use fresher or more specific information.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "scenario": "pass",
+            "expected_verdict": "pass"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Explain how retrieval + generation interact in RAG systems to improve LLM factual accuracy.",
+        "actual_output": "In RAG, the language model answers the question first, and retrieval happens afterward mainly to rewrite the response in a nicer style. This boosts factual accuracy because the model does not need outside information and depends entirely on its pre-trained memory.",
+        "expected_output": "In a RAG system, the retrieval step first looks up relevant documents or passages from an external knowledge source based on the user’s question. The generation step then uses that retrieved context to help the language model produce an answer grounded in those sources. This improves factual accuracy because the model is not relying only on what it memorized during training, and it can use fresher or more specific information.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "scenario": "fail_contradiction",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    },
+    {
+        "input": "Explain how retrieval + generation interact in RAG systems to improve LLM factual accuracy.",
+        "actual_output": "RAG combines retrieval and generation to answer questions. It can help the model respond better by using extra information.",
+        "expected_output": "In a RAG system, the retrieval step first looks up relevant documents or passages from an external knowledge source based on the user’s question. The generation step then uses that retrieved context to help the language model produce an answer grounded in those sources. This improves factual accuracy because the model is not relying only on what it memorized during training, and it can use fresher or more specific information.",
+        "retrieval_context": null,
+        "context": null,
+        "name": null,
+        "comments": null,
+        "source_file": null,
+        "tools_called": null,
+        "expected_tools": null,
+        "token_cost": null,
+        "input_token_count": null,
+        "output_token_count": null,
+        "additional_metadata": {
+            "question_id": 3,
+            "scenario": "fail_incomplete",
+            "expected_verdict": "fail"
+        },
+        "custom_column_key_values": null,
+        "expectations": null
+    }
+]
