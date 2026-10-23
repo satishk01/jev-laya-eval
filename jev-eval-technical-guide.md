@@ -442,7 +442,8 @@ curl http://127.0.0.1:8000/health   # wait for "loaded": ["typed-decisions"]
 
 # terminal 2 — smoke test, then the full suite
 PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_first_eval.py
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py   # 72 tests
+PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py           # 72 tests
+PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent_extended.py  # 49 evals + 4 more
 
 # subsets
 PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py -k "judge"

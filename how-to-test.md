@@ -112,15 +112,16 @@ pytest args. To run the whole repo's tests in one command:
 
 ```shell
 # Git Bash
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run . --ignore=_demo
+PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run . --ignore=gitsss
 
 # PowerShell
-$env:PYTHONUTF8="1"; .venv\Scripts\deepeval.exe test run . --ignore=_demo
+$env:PYTHONUTF8="1"; .venv\Scripts\deepeval.exe test run . --ignore=gitsss
 ```
 
-The `--ignore=_demo` is required: `_demo/` is a snapshot copy of the
-project, and its duplicate `test_*.py` basenames break pytest collection
-("import file mismatch"). With it, all **144 tests** are collected.
+The `--ignore=gitsss` is required: `gitsss/jev-laya-eval/` is a clone of
+the project, and its duplicate `test_*.py` basenames break pytest
+collection ("import file mismatch"). With it, all **144 tests** are
+collected.
 
 Equivalently, list the files you want — extra positional args pass through
 to pytest:
@@ -240,7 +241,7 @@ reuse the `qN-scenario` pattern (`q9`/`q10` = out-of-scope refusals, `q11`
 |---|---|---|
 | `test_trajectory_and_keywords[qN-pass]` | 9 | ≥1 search before answering, ≤4 tool calls, converged inside `MAX_STEPS`; searched keywords grounded in the query/context |
 | `test_trajectory_flail_caught`, `test_lazy_refusal_caught`, `test_keyword_relevance_irrelevant_caught` | 3 | Canned bad behaviour must be caught (over-budget calls, refusing without searching, on-contract but irrelevant keywords) |
-| `test_out_of_scope_refusal` / `..._answered_anyway_caught` | 3 | Exact `"Sorry I cannot help with that."` for out-of-scope queries — but only *after* searching; a confident answer instead must fail |
+| `test_out_of_scope_refusal` / `..._answered_anyway_caught` | 3 | `"Sorry I cannot help with that."` (or a `cannot help with that` fragment, for `llm`-backend phrasing) for out-of-scope queries — but only *after* searching, within 3 calls; a confident answer instead must fail |
 | `test_grounding` / `test_grounding_catches_unsupported` | 25 | Faithfulness: each answer sentence is judged against its best-matching retrieved paragraph (one paragraph per sentence — the checkpoint misses contradictions against large context states); canned contradictions must fail, thin-but-true stays grounded |
 | `test_answer_stability[qN-pass]` | 9 | Same query ×3 runs: identical under `extractive`, ≥85% similar under `llm` |
 | `test_multi_turn_*` | 3 | History accumulates; capped at `MAX_USER_TURNS`; pronoun follow-up (llm-gated) |
@@ -249,8 +250,10 @@ reuse the `qN-scenario` pattern (`q9`/`q10` = out-of-scope refusals, `q11`
 New data in `goldens/agent_extended_goldens.json`. Note: refusal queries
 were chosen so every keyword *stem* (≥4 chars) misses the knowledge base —
 under `extractive`, a stem collision (e.g. "bread"→"brea"→"break") retrieves
-paragraphs and the agent answers instead of refusing. And four tests skip
-under plain `pytest` — they need `deepeval test run`'s per-test trace.
+paragraphs and the agent answers instead of refusing. And the trace-reading
+tests — `test_trajectory_and_keywords`, `test_out_of_scope_refusal`, and
+`test_grounding` (20 cases in all) — skip under plain `pytest`: they need
+`deepeval test run`'s per-test trace.
 
 ## test_goldens_from_scratch.py — tutorial-04 artifact
 
@@ -345,8 +348,8 @@ REM same window -- smoke test, then the test files
 .venv\Scripts\deepeval.exe test run test_first_eval_geval.py   REM needs an LLM judge (OPENAI_API_KEY or set-ollama)
 .venv\Scripts\deepeval.exe test run test_agent_extended.py     REM judge needed for grounding tests only
 
-REM or everything at once (--ignore=_demo avoids duplicate-basename errors)
-.venv\Scripts\deepeval.exe test run . --ignore=_demo
+REM or everything at once (--ignore=gitsss avoids duplicate-basename errors)
+.venv\Scripts\deepeval.exe test run . --ignore=gitsss
 
 REM offline only, no judge needed
 .venv\Scripts\deepeval.exe test run test_agent.py -k "not judge"
@@ -375,8 +378,8 @@ Notes:
   checkpoint is still loading. Check `/health` and rerun once `loaded`
   includes `typed-decisions`.
 - **`import file mismatch` collecting `test_*.py`:** you're running
-  against a directory and pytest found `_demo/`'s duplicate test files.
-  Add `--ignore=_demo` or name the files explicitly.
+  against a directory and pytest found `gitsss/`'s duplicate test files.
+  Add `--ignore=gitsss` or name the files explicitly.
 - **`OPENAI_API_KEY` errors on `test_first_eval_geval.py` or `generate_*.py`:**
   expected — those need a real OpenAI key in `.env`; skip them for the
   offline setup.
@@ -384,9 +387,12 @@ Notes:
   expected — it uses `Noul` (broken on `typed-decisions`, laya #156) and
   relies on the score head grading coverage (it reads topical overlap
   instead). It passes against hosted `jev-1.13`.
-- **Extended tests skip under plain `pytest`:** trajectory/refusal/
-  grounding/llm tests read the per-test trace that only `deepeval test run`
+- **Extended tests skip under plain `pytest`:** the trajectory, refusal and
+  grounding tests read the per-test trace that only `deepeval test run`
   creates. Run them through `deepeval test run`, not `pytest`.
+  (`test_llm_backend_smoke` also reads the trace, but it *fails* without
+  one rather than skipping — under the default `extractive` backend it
+  skips anyway because it's `llm`-gated.)
 - **`RetryError`/`TimeoutError` on grounding-style judge calls:** the judge
   request timed out — keep context states small. `GroundingMetric` sends
   one retrieved paragraph per sentence group for exactly this reason; don't

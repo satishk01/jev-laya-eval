@@ -148,8 +148,15 @@ dependency (useful while the checkpoint downloads):
 PYTHONUTF8=1 .venv/bin/deepeval test run test_agent.py -k "not judge"   # 48 evals, seconds
 ```
 
-See [how-to-test.md](how-to-test.md) for every file and `-k` filter —
-layer subsets, per-query, per-failure-mode — plus what each layer checks.
+The repo's other two test files are deliberately **not** part of this run —
+if you run them (or `deepeval test run .`), expect failures for documented
+reasons, not a broken setup: `test_goldens_from_scratch.py` (9 tests) uses
+the `Noul` question form and coverage `Score`s the local checkpoint gets
+wrong — it only passes against hosted `jev-1.13` — and
+`test_first_eval_geval.py` (1 test) needs an LLM judge (`OPENAI_API_KEY`
+or a local Ollama model). See [how-to-test.md](how-to-test.md) for every
+file and `-k` filter — layer subsets, per-query, per-failure-mode — plus
+what each layer checks.
 
 ## Step 9 — done? stop the instance
 
@@ -185,6 +192,9 @@ SSH user is `ec2-user@`. Everything else is the same.
   sudo chmod 600 /swapfile
   sudo mkswap /swapfile && sudo swapon /swapfile
   ```
+
+  (`swapon` doesn't survive a reboot — rerun `sudo swapon /swapfile`, or
+  add an `/etc/fstab` line, if you restart the instance.)
 
 - **Disk full:** the CUDA build of torch is the usual suspect —
   reinstall CPU-only with `pip install torch --index-url

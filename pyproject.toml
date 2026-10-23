@@ -3,12 +3,26 @@ name = "deepeval-agent-evals"
 version = "0.1.0"
 description = "Layered evals for a small ReAct agent, built with DeepEval"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.11"
 dependencies = [
     "deepeval>=4.2.8",
+    "laya[serve]",
     "nltk>=3.10.3",
     "openai>=3.29.0",
     "python-dotenv>=1.2.4",
     "rapidfuzz>=3.14.6",
+    "torch",
     "typesafe-sdk>=0.7.4",
 ]
+
+# Resolve torch from PyTorch's CPU-wheel index (as requirements.txt does)
+# so `uv sync` doesn't pull the multi-GB CUDA build. On a GPU host, delete
+# the source below to get the normal build instead. No +cpu wheels exist
+# for macOS, where the PyPI build is already CPU/MPS-only.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]

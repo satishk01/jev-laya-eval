@@ -375,15 +375,15 @@ plus the existing judge pass/fail sets.
 
 | Test | Count | What it proves |
 |---|---|---|
-| `test_trajectory_and_keywords[qN-pass]` | 9 (q1–q8 + q11) | Live run: ≥1 tool call (searched before answering — the degenerate "tool selection" check for a one-tool agent), ≤4 calls (bounded), converged (no `MAX_STEPS` fallback), and every searched keyword word is grounded in the query or context (`TrajectoryMetric` + `KeywordRelevanceMetric`) |
+| `test_trajectory_and_keywords[qN-pass]` | 9 (q1–q8 + q11) | Live run: ≥1 tool call (searched before answering — the degenerate "tool selection" check for a one-tool agent), ≤4 calls (bounded), converged (no `MAX_STEPS` fallback), and ≥50% of searched keyword words grounded in the query or context — a word counts if it appears inside a query word (covers stems like "summar" for "summarization") or anywhere in the context (`TrajectoryMetric` + `KeywordRelevanceMetric`) |
 | `test_trajectory_flail_caught` | 1 | Canned agent with 5 tool calls → budget check **must fail** |
 | `test_lazy_refusal_caught` | 1 | Refusal text without any search → refusal metric passes but "searched first" **must fail** — right words, wrong behaviour |
 | `test_keyword_relevance_irrelevant_caught` | 1 | Well-formed keywords "zebra"/"quantum" → relevance **must fail** |
-| `test_out_of_scope_refusal[q9/q10]` | 2 | Out-of-scope queries (capital of France, Mariana Trench) → exact refusal string, and only *after* searching the KB (`RefusalMetric` + `TrajectoryMetric`) |
+| `test_out_of_scope_refusal[q9/q10]` | 2 | Out-of-scope queries (capital of France, Mariana Trench) → the refusal string, and only *after* searching the KB — with a tighter budget of ≤3 calls since a refusal needs no second search (`RefusalMetric` + `TrajectoryMetric`). The metric accepts the exact string or the looser `"cannot help with that"` fragment, so the `llm` backend's phrasing variance doesn't flake it |
 | `test_out_of_scope_answered_anyway_caught[q9]` | 1 | Canned confident answer to an out-of-scope query → refusal check **must fail** |
-| `test_grounding[qN-pass]` | 9 | Faithfulness: every sentence of the live answer agrees with the retrieved paragraphs, judged per-sentence vs. its best-matching paragraph (`GroundingMetric`) |
+| `test_grounding[qN-pass]` | 9 | Faithfulness: every sentence of the live answer agrees with the retrieved paragraphs, judged per-sentence vs. its best-matching paragraph, `min` over the sentence verdicts (`GroundingMetric`) |
 | `test_grounding_catches_unsupported` | 16 | Canned answers vs. their context: `fail_contradiction` must fail grounding; `fail_incomplete` is still grounded (grounding ≠ completeness) |
-| `test_answer_stability[qN-pass]` | 9 | 3 fresh runs per query: identical under `extractive`, ≥85% pairwise RapidFuzz under a real model (`StabilityMetric`) |
+| `test_answer_stability[qN-pass]` | 9 | 3 fresh runs per query: identical under `extractive`, ≥85% pairwise RapidFuzz under a real model; also fails if any run hits the `MAX_STEPS` fallback or refuses an in-scope question (`StabilityMetric`) |
 | `test_multi_turn_history_accumulates` / `test_multi_turn_window_capped` | 2 | Plain pytest: history keeps both turns; capped at `MAX_USER_TURNS` after 7 queries |
 | `test_multi_turn_followup` / `test_llm_backend_smoke` | 2 | `skipif` unless `AGENT_BACKEND=llm`: pronoun follow-up resolution, and a real-model tool-choice smoke test |
 
@@ -425,9 +425,9 @@ REM window 2 — smoke test, then the suite
 .venv\Scripts\deepeval.exe test run test_first_eval_geval.py      REM 1 test,   LLM judge needed (OPENAI_API_KEY or set-ollama)
 .venv\Scripts\deepeval.exe test run test_agent_extended.py        REM 53 tests, judge for grounding only
 
-REM everything at once (--ignore=_demo skips a snapshot copy whose
+REM everything at once (--ignore=gitsss skips a clone of the project whose
 REM duplicate test_*.py basenames break pytest collection)
-.venv\Scripts\deepeval.exe test run . --ignore=_demo
+.venv\Scripts\deepeval.exe test run . --ignore=gitsss
 
 REM offline subsets — no judge, no keys, seconds
 .venv\Scripts\deepeval.exe test run test_agent.py -k "not judge"   REM 56 tests
@@ -500,8 +500,9 @@ Probabilities: ..."` or `"3/5 key phrase requirements met ..."`).
 - The extended file doesn't cover **multi-tool selection** (the agent has
   one tool) — needs an agent change to test.
 - Trace-reading tests (`test_trajectory_*`, `test_out_of_scope_refusal`,
-  `test_grounding`, `test_llm_backend_smoke`) **skip under plain `pytest`**
-  — they need the per-test trace only `deepeval test run` sets up.
+  `test_grounding`) **skip under plain `pytest`** — they need the per-test
+  trace only `deepeval test run` sets up. (`test_llm_backend_smoke` reads
+  the trace too, but *fails* rather than skips when it's absent.)
 - First judge request after starting `run_judge.py` can take a minute or
   two (checkpoint loads lazily); check `curl http://127.0.0.1:8000/health`.
 - Without `PYTHONUTF8=1`, the results table crashes printing Unicode marks
