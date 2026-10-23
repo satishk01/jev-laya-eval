@@ -1,0 +1,115 @@
+[
+  {
+    "input": "What topics does the knowledge base cover?",
+    "actual_output": null,
+    "expected_output": null,
+    "retrieval_context": null,
+    "context": null,
+    "name": null,
+    "comments": null,
+    "source_file": null,
+    "tools_called": null,
+    "expected_tools": [
+      {
+        "name": "list_sections",
+        "type": "FUNCTION"
+      }
+    ],
+    "token_cost": null,
+    "input_token_count": null,
+    "output_token_count": null,
+    "additional_metadata": {
+      "question_id": 20,
+      "scenario": "pass",
+      "expected_verdict": "pass",
+      "kind": "tool_selection"
+    },
+    "custom_column_key_values": null,
+    "expectations": null
+  },
+  {
+    "input": "Which AI engineering sections can you answer questions about?",
+    "actual_output": null,
+    "expected_output": null,
+    "retrieval_context": null,
+    "context": null,
+    "name": null,
+    "comments": null,
+    "source_file": null,
+    "tools_called": null,
+    "expected_tools": [
+      {
+        "name": "list_sections",
+        "type": "FUNCTION"
+      }
+    ],
+    "token_cost": null,
+    "input_token_count": null,
+    "output_token_count": null,
+    "additional_metadata": {
+      "question_id": 21,
+      "scenario": "pass",
+      "expected_verdict": "pass",
+      "kind": "tool_selection"
+    },
+    "custom_column_key_values": null,
+    "expectations": null
+  },
+  {
+    "input": "What can you help me with?",
+    "actual_output": null,
+    "expected_output": null,
+    "retrieval_context": null,
+    "context": null,
+    "name": null,
+    "comments": null,
+    "source_file": null,
+    "tools_called": null,
+    "expected_tools": [
+      {
+        "name": "list_sections",
+        "type": "FUNCTION"
+      }
+    ],
+    "token_cost": null,
+    "input_token_count": null,
+    "output_token_count": null,
+    "additional_metadata": {
+      "question_id": 22,
+      "scenario": "pass",
+      "expected_verdict": "pass",
+      "kind": "tool_selection"
+    },
+    "custom_column_key_values": null,
+    "expectations": null
+  },
+  {
+    "input": "What is the difference between temperature and top-p in AI text sampling?",
+    "actual_output": null,
+    "expected_output": null,
+    "retrieval_context": null,
+    "context": null,
+    "name": null,
+    "comments": null,
+    "source_file": null,
+    "tools_called": null,
+    "expected_tools": [
+      {
+        "name": "search_knowledge",
+        "type": "FUNCTION"
+      }
+    ],
+    "token_cost": null,
+    "input_token_count": null,
+    "output_token_count": null,
+    "additional_metadata": {
+      "question_id": 23,
+      "scenario": "pass",
+      "expected_verdict": "pass",
+      "kind": "tool_selection",
+      "note": "control: a topical query must still route to search_knowledge when both tools exist"
+    },
+    "custom_column_key_values": null,
+    "expectations": null
+  }
+]

@@ -15,18 +15,23 @@ Like the main suite, every check is self-verifying: canned agents that
 flail, guess, or refuse lazily are expected to be *caught* by their metric.
 
 Deliberately not covered (structural, not an oversight):
-- multi-tool selection -- agent.py has exactly one tool; the only "selection"
-  available is search-before-answering, which the trajectory check asserts.
+- multi-tool selection -- agent.py has one tool by default; the opt-in second
+  tool (AGENT_TOOLS=search_knowledge,list_sections) is exercised by the
+  selection tests at the bottom. Single-tool, the only "selection" available
+  is search-before-answering, which the trajectory check asserts.
 - real-LLM decision-making -- the default AGENT_BACKEND=extractive is
   deterministic; one llm-gated smoke test runs when AGENT_BACKEND=llm is set.
 
 Run: deepeval test run test_agent_extended.py
-Only the grounding tests need the judge; everything else is local and free.
+Plain pytest works too: trace-reading tests start their own trace when the
+runner doesn't provide one (ensure_trace). Only the grounding tests need the
+judge; everything else is local and free.
 """
 
 import itertools
 import json
 import re
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Optional
 
@@ -35,15 +40,16 @@ from rapidfuzz import fuzz
 
 from deepeval import assert_test
 from deepeval.dataset import EvaluationDataset, Golden
-from deepeval.metrics import BaseMetric, JevEval
+from deepeval.metrics import BaseMetric, JevEval, ToolCorrectnessMetric
 from deepeval.metrics.jev_eval import Choice
 from deepeval.test_case import LLMTestCase, SingleTurnParams, ToolCall
 
 import agent
 from deepeval_fuzzy_util import words
-from deepeval_tool_util import tool_spans
+from deepeval_tool_util import ExpectedVerdictMetric, tool_spans
 
 from deepeval.tracing.context import current_trace_context
+from deepeval.tracing.trace_context import trace as deepeval_trace
 
 GOLDENS_DIR = Path(__file__).parent / "goldens"
 
@@ -74,6 +80,8 @@ EXTENDED = load_goldens("agent_extended_goldens.json")
 MULTIPART = [g for g in EXTENDED if g.additional_metadata["kind"] == "multipart"]
 REFUSALS = [g for g in EXTENDED if g.additional_metadata["scenario"] == "refuse_out_of_scope"]
 ANSWERED_ANYWAY = [g for g in EXTENDED if g.additional_metadata["scenario"] == "fail_answered_anyway"]
+SELECTION = load_goldens("agent_tool_selection_goldens.json")
+SECTIONS_ON = "list_sections" in agent.TOOLS
 # Queries the live agent must handle well: the main 8 plus the multi-part one.
 LIVE_GOLDENS = JUDGE_PASS + MULTIPART
 
@@ -93,10 +101,10 @@ def recorded_calls() -> list[ToolCall]:
 
     Unlike deepeval_tool_util.record_tools_called this doesn't write back to
     the trace (no trace-level metrics here need it) and returns [] when no
-    trace context exists, e.g. under plain pytest instead of deepeval test run.
+    trace exists, e.g. outside ensure_trace().
     """
     calls = []
-    for span in tool_spans():
+    for span in tool_spans(_active_trace()):
         try:
             params = json.loads(span.input) if isinstance(span.input, str) else span.input
         except json.JSONDecodeError:
@@ -105,15 +113,37 @@ def recorded_calls() -> list[ToolCall]:
     return calls
 
 
-def require_trace() -> None:
-    """Trace-reading tests need deepeval test run's per-test trace."""
-    if current_trace_context.get() is None:
-        pytest.skip("no deepeval trace: run via `deepeval test run`, not plain pytest")
+# Set by ensure_trace when it starts its own trace: @observe's teardown resets
+# the context var once the root span ends, so span readers fall back to this
+# reference instead of current_trace_context.get().
+_manual_trace = None
+
+
+@contextmanager
+def ensure_trace():
+    """A deepeval trace for the live run: the per-test trace `deepeval test
+    run` provides, or a fresh one started here under plain pytest. Either way
+    the run's tool spans are recorded, so trace-reading tests work under both
+    runners. (Without a Confident AI key the manual trace just isn't posted.)"""
+    global _manual_trace
+    if current_trace_context.get() is not None:
+        yield
+        return
+    with deepeval_trace() as trace:
+        _manual_trace = trace
+        try:
+            yield
+        finally:
+            _manual_trace = None
+
+
+def _active_trace():
+    return current_trace_context.get() or _manual_trace
 
 
 def tool_outputs() -> list[str]:
     """The tool outputs in the current trace -- what the agent actually saw."""
-    return [s.output for s in tool_spans() if isinstance(s.output, str)]
+    return [s.output for s in tool_spans(_active_trace()) if isinstance(s.output, str)]
 
 
 def make_call(keywords: list[str], output: str) -> ToolCall:
@@ -410,9 +440,9 @@ def retrieval_blocks() -> list[str]:
 def test_trajectory_and_keywords(golden: Golden):
     """Live run: the agent searches before answering, stays within the call
     budget, converges, and its keywords are grounded in the query/context."""
-    require_trace()
-    answer = live_run(golden.input)
-    calls = recorded_calls()
+    with ensure_trace():
+        answer = live_run(golden.input)
+        calls = recorded_calls()
     assert_test(
         LLMTestCase(
             input=golden.input,
@@ -463,9 +493,9 @@ def test_keyword_relevance_irrelevant_caught():
 @pytest.mark.parametrize("golden", REFUSALS, ids=case_id)
 def test_out_of_scope_refusal(golden: Golden):
     """Out-of-scope query: exact refusal, and only after searching the KB."""
-    require_trace()
-    answer = live_run(golden.input)
-    calls = recorded_calls()
+    with ensure_trace():
+        answer = live_run(golden.input)
+        calls = recorded_calls()
     assert_test(
         LLMTestCase(
             input=golden.input,
@@ -501,9 +531,9 @@ def test_grounding(golden: Golden):
     """Every sentence of the live answer agrees with the tool outputs the
     agent actually retrieved (faithfulness). Each sentence is checked against
     its best-matching retrieved paragraph."""
-    require_trace()
-    answer = live_run(golden.input)
-    retrieval = retrieval_blocks() or (golden.context or [])
+    with ensure_trace():
+        answer = live_run(golden.input)
+        retrieval = retrieval_blocks() or (golden.context or [])
     assert_test(
         LLMTestCase(input=golden.input, actual_output=answer),
         [GroundingMetric(answer, retrieval, expected_pass=True)],
@@ -583,7 +613,73 @@ def test_multi_turn_followup():
 def test_llm_backend_smoke():
     """With a real model configured, the live agent still searches and
     answers -- the cheapest end-to-end check of actual LLM tool choice."""
-    answer = live_run(JUDGE_PASS[0].input)
-    calls = recorded_calls()
+    with ensure_trace():
+        answer = live_run(JUDGE_PASS[0].input)
+        calls = recorded_calls()
     assert calls, "the llm agent answered without calling search_knowledge"
     assert answer and not answer.startswith(STEP_LIMIT_PREFIX)
+
+
+# --- Tool selection (list_sections is opt-in via AGENT_TOOLS) -----------------
+
+
+@pytest.mark.parametrize("golden", SELECTION, ids=case_id)
+def test_extractive_tool_choice(golden: Golden):
+    """The extractive policy's first step picks the expected tool: list_sections
+    for coverage questions, search_knowledge for topical ones. Reads no trace,
+    so it also runs under plain pytest. With the tool disabled, coverage
+    questions fall back to search -- the gate documented as a test."""
+    if agent.BACKEND != "extractive":
+        pytest.skip("the llm backend chooses its own tool")
+    step = agent.extractive_step([{"role": "user", "content": golden.input}])
+    if SECTIONS_ON:
+        assert step["action"] == golden.expected_tools[0].name
+    else:
+        assert step["action"] in {"search_knowledge", "final_answer"}
+
+
+@pytest.mark.skipif(
+    not SECTIONS_ON,
+    reason="needs AGENT_TOOLS=search_knowledge,list_sections",
+)
+@pytest.mark.parametrize("golden", SELECTION, ids=case_id)
+def test_tool_selection(golden: Golden):
+    """Live run: the agent calls the expected tool, and a coverage answer
+    actually names sections."""
+    with ensure_trace():
+        answer = live_run(golden.input)
+        calls = recorded_calls()
+    assert_test(
+        LLMTestCase(
+            input=golden.input,
+            actual_output=answer,
+            tools_called=calls,
+            expected_tools=golden.expected_tools,
+        ),
+        [ToolCorrectnessMetric(threshold=1.0)],
+    )
+    if golden.expected_tools[0].name == "list_sections":
+        assert "sections" in answer.lower()
+
+
+def test_tool_selection_wrong_tool_caught():
+    """A canned agent answering a coverage question with keyword search must
+    be caught by tool correctness -- wrong tool, even though it 'tried'.
+    Ungated: it checks the harness, not the tool's availability."""
+    golden = SELECTION[0]
+    calls = [make_call(["topics", "cover"], "No paragraphs matched: topics, cover")]
+    assert_test(
+        LLMTestCase(
+            input=golden.input,
+            actual_output="(mocked answer)",
+            tools_called=calls,
+            expected_tools=golden.expected_tools,
+        ),
+        [
+            ExpectedVerdictMetric(
+                ToolCorrectnessMetric(threshold=1.0),
+                expected_pass=False,
+                name="Tool correctness",
+            )
+        ],
+    )

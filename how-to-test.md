@@ -23,15 +23,15 @@ a local Laya server — so no API keys are needed for the main suite.
 
 There are **five** test files at the repo root — the technical guide's
 `generate_*`/`deepeval_*` files are utilities and data generators, not
-tests. 144 pytest tests in total:
+tests. 153 pytest tests in total:
 
 | File | Tests | Judge needed? | API key? | What it does |
 |---|---|---|---|---|
 | `test_first_eval.py` | 1 | yes | no | Smoke test: one hard-coded answer vs. a reference, through `JevEval`. Proves the judge connection works end to end. |
 | `test_agent.py` | 80 (72 evals + 8 data checks) | only for the judge layer | no (with `extractive` backend) | The layered suite: structured → fuzzy → judge, over queries q1–q8. |
-| `test_agent_extended.py` | 53 (49 evals + 2 pytest checks + 2 llm-gated) | only for grounding | no (with `extractive` backend) | Behavioural extension: trajectory/step budget, keyword quality, refusal path, grounding vs. retrieval, multi-turn memory, variance, one multi-part query. |
+| `test_agent_extended.py` | 62 (50 evals by default, 54 with `list_sections` enabled; + 6 pytest checks + 2 llm-gated — see "Optional: the second tool") | only for grounding | no (with `extractive` backend) | Behavioural extension: trajectory/step budget, keyword quality, refusal path, grounding vs. retrieval, multi-turn memory, variance, one multi-part query, tool selection. |
 | `test_goldens_from_scratch.py` | 9 | yes | no | Judge metrics over `goldens/ai_engineering_goldens.json`. Uses `Noul`, so it needs the **hosted Jev** to pass fully — see its section below. |
-| `test_first_eval_geval.py` | 1 | no | an LLM judge (`OPENAI_API_KEY` or Ollama/local — see its section) | The same correctness eval via `GEval` (generative LLM-as-judge), for comparison with the decision-model judge. |
+| `test_first_eval_geval.py` | 1 | no | an LLM judge — skips cleanly when none is configured (`OPENAI_API_KEY` or Ollama/local — see its section) | The same correctness eval via `GEval` (generative LLM-as-judge), for comparison with the decision-model judge. |
 
 ## Which environment each test needs
 
@@ -43,6 +43,7 @@ changes:
 | **Local Laya + extractive agent** (default, fully offline) | `TYPESAFE_BASE_URL=http://localhost:8000`, `TYPESAFE_API_KEY=local-laya`, `TYPESAFE_MODEL_NAME=typed-decisions`, `AGENT_BACKEND=extractive` | Everything except `test_first_eval_geval.py`. The only setup this runbook assumes. |
 | **Hosted Jev** | `TYPESAFE_BASE_URL=<gateway>`, `TYPESAFE_API_KEY=<key>`, `TYPESAFE_MODEL_NAME=jev-1.13` | Same tests, no `run_judge.py` needed. Additionally `test_goldens_from_scratch.py` passes fully: jev-1.13's `Noul` head works and its `Score` head catches incomplete answers — two things the local checkpoint can't do (see "test_goldens_from_scratch.py" below). |
 | **Real LLM agent** | `AGENT_BACKEND=llm` + `INFERENCE_*` (defaults point at Ollama: `http://localhost:11434/v1`, `llama3.2`; `INFERENCE_API_STYLE=chat` also covers LM Studio/vLLM, `responses` covers OpenAI) | The "pass" tests in `test_agent.py` now exercise a real model instead of the deterministic extractive stand-in, so pass/fail depends on that model's quality. Planted-failure tests are unaffected (they use mocked answers). |
+| **Second tool enabled** | `AGENT_TOOLS=search_knowledge,list_sections` (default is `search_knowledge` alone) | The agent gains `list_sections()` — returns the knowledge base's section outline, for meta-questions like "What topics do you cover?" Enables the `test_tool_selection` cases in the extended file. See "Optional: the second tool" below. |
 | **LLM-as-judge for GEval** | `OPENAI_API_KEY=<key>` **or** a local model — see "test_first_eval_geval.py" below | `test_first_eval_geval.py`, and regenerating goldens with `generate_*.py` (DeepEval's Synthesizer defaults to OpenAI). |
 
 Notes:
@@ -60,9 +61,9 @@ Notes:
 1. The virtualenv exists (`.venv/`) with `deepeval` and `laya[serve]` installed.
 2. `.env` exists — `copy .env.example .env` if not. The defaults already
    point at the local judge and the extractive agent.
-3. Set `PYTHONUTF8=1` in every window you run tests in — otherwise
-   DeepEval's results table crashes printing `✓`/`⚠` through the cp1252
-   console. (`chcp 65001` is an alternative.)
+3. Windows: nothing to set — `conftest.py` reconfigures stdout/stderr to
+   UTF-8 at import, so the results table's `✓`/`⚠` marks print fine on a
+   cp1252 console. `PYTHONUTF8=1` still works if you prefer it.
 
 ## Step 1 — start the local judge
 
@@ -84,22 +85,25 @@ Verify it is up (in a second terminal):
 curl http://127.0.0.1:8000/health
 ```
 
-Expect `{"status":"ok","loaded":["typed-decisions"],...}`.
+Expect `{"status":"ok",...}`. The `loaded` list may be empty right after
+startup — `run_judge.py` sets `LAYA_PRELOAD=0`, so checkpoints load lazily.
 
-> First-run note: the checkpoint loads lazily, so the first judge request
-> can take a minute or two while `convaiinnovations/laya` downloads/loads.
-> Every later request answers in ~1–3s. If a test times out at ~88s right
-> after starting the server, wait for `loaded` to appear in `/health` and
-> rerun — it is a cold start, not a test failure.
+> First-run note: the first judge request can take a minute or two while
+> `convaiinnovations/laya` downloads/loads the checkpoint; afterwards
+> `loaded` includes `typed-decisions`. Every later request answers in
+> ~1–3s. If a test times out at ~88s right after starting the server, wait
+> for `loaded` to appear in `/health` and rerun — it is a cold start, not
+> a test failure. (Set `LAYA_PRELOAD=1` before `run_judge.py` to pay that
+> cost at startup instead.)
 
 ## Step 2 — smoke test the judge connection
 
 ```shell
 # Git Bash
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_first_eval.py
+.venv/Scripts/deepeval.exe test run test_first_eval.py
 
-# PowerShell
-$env:PYTHONUTF8="1"; .venv\Scripts\deepeval.exe test run test_first_eval.py
+# PowerShell / cmd.exe
+.venv\Scripts\deepeval.exe test run test_first_eval.py
 ```
 
 Expected: `1 passed` in a few seconds (warm judge). If this fails with
@@ -112,32 +116,32 @@ pytest args. To run the whole repo's tests in one command:
 
 ```shell
 # Git Bash
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run . --ignore=gitsss
+.venv/Scripts/deepeval.exe test run . --ignore=gitsss
 
-# PowerShell
-$env:PYTHONUTF8="1"; .venv\Scripts\deepeval.exe test run . --ignore=gitsss
+# PowerShell / cmd.exe
+.venv\Scripts\deepeval.exe test run . --ignore=gitsss
 ```
 
 The `--ignore=gitsss` is required: `gitsss/jev-laya-eval/` is a clone of
 the project, and its duplicate `test_*.py` basenames break pytest
-collection ("import file mismatch"). With it, all **144 tests** are
+collection ("import file mismatch"). With it, all **153 tests** are
 collected.
 
 Equivalently, list the files you want — extra positional args pass through
 to pytest:
 
 ```shell
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_first_eval.py test_agent.py test_goldens_from_scratch.py
+.venv/Scripts/deepeval.exe test run test_first_eval.py test_agent.py test_goldens_from_scratch.py
 ```
 
 Or run each file separately — useful because they need different things:
 
 ```shell
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_first_eval.py            # 1 test,   judge needed
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py                 # 80 tests, judge for judge layer only
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent_extended.py        # 53 tests, judge for grounding only
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_goldens_from_scratch.py  # 9 tests,  judge needed (see caveats)
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_first_eval_geval.py      # 1 test,   OPENAI_API_KEY needed
+.venv/Scripts/deepeval.exe test run test_first_eval.py            # 1 test,   judge needed
+.venv/Scripts/deepeval.exe test run test_agent.py                 # 80 tests, judge for judge layer only
+.venv/Scripts/deepeval.exe test run test_agent_extended.py        # 62 tests, judge for grounding only
+.venv/Scripts/deepeval.exe test run test_goldens_from_scratch.py  # 9 tests,  judge needed (see caveats)
+.venv/Scripts/deepeval.exe test run test_first_eval_geval.py      # 1 test,   skips unless an LLM judge is configured
 ```
 
 Expected results per file (default local-Laya setup):
@@ -146,9 +150,9 @@ Expected results per file (default local-Laya setup):
 |---|---|
 | `test_first_eval.py` | 1 passed, a few seconds |
 | `test_agent.py` | `72 total tests, 100% passed` in ~3–4 min (the judge phase dominates). pytest collects 80 items; the 8 `test_query_group_complete` checks run as plain pytest asserts and aren't counted in DeepEval's table. |
-| `test_agent_extended.py` | `49 total tests, 100% passed` in ~3.5 min (grounding calls dominate). pytest collects 53 items: 2 multi-turn checks are plain asserts, 2 are skipped unless `AGENT_BACKEND=llm`. |
+| `test_agent_extended.py` | `50 total tests, 100% passed` in ~3.5 min (grounding calls dominate). pytest collects 62 items: 6 checks are plain pytest asserts (2 multi-turn + 4 tool-choice), 4 tool-selection evals skip unless `list_sections` is enabled (`AGENT_TOOLS=search_knowledge,list_sections` → `54 total`), 2 are skipped unless `AGENT_BACKEND=llm`. |
 | `test_goldens_from_scratch.py` | **Expect failures under local Laya** — see its section. Should pass 9/9 against hosted `jev-1.13`. |
-| `test_first_eval_geval.py` | 1 passed if `OPENAI_API_KEY` is set; errors without it. |
+| `test_first_eval_geval.py` | 1 passed if an LLM judge is configured (`OPENAI_API_KEY` or a local model); **skips** if none is. |
 
 Results are written to `deepeval_results/test_run_*.json`
 (`DEEPEVAL_RESULTS_FOLDER`).
@@ -202,13 +206,13 @@ Examples:
 
 ```shell
 # one parametrized case
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py -k "q3-fuzzy-pass"
+.venv/Scripts/deepeval.exe test run test_agent.py -k "q3-fuzzy-pass"
 
 # a whole layer
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py -k "judge"
+.venv/Scripts/deepeval.exe test run test_agent.py -k "judge"
 
 # everything that doesn't need the judge (runs in seconds, fully offline)
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py -k "not judge"
+.venv/Scripts/deepeval.exe test run test_agent.py -k "not judge"
 ```
 
 ### Running without the judge
@@ -217,7 +221,7 @@ The structured layer, fuzzy layer, and the group checks never touch the
 judge — with `AGENT_BACKEND=extractive` they need no network at all:
 
 ```shell
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py -k "not judge"   # 56 tests, ~4s
+.venv/Scripts/deepeval.exe test run test_agent.py -k "not judge"   # 56 tests, ~4s
 ```
 
 ### Layer toggles
@@ -230,12 +234,13 @@ changes (e.g. a CI job with no judge).
 
 ## test_agent_extended.py — the behavioural extension
 
-53 tests probing *how the agent behaves*, not just what it outputs. Same
+62 tests probing *how the agent behaves*, not just what it outputs. Same
 self-verification style: canned bad actors are expected to be *caught*.
 Only `test_grounding*` needs the judge; everything else is local. Test ids
 reuse the `qN-scenario` pattern (`q9`/`q10` = out-of-scope refusals, `q11`
-= the multi-part query), so `-k` filters work the same way
-(`-k "trajectory"`, `-k "refusal"`, `-k "not grounding"` for fully offline).
+= the multi-part query, `q20`–`q23` = tool selection), so `-k` filters work
+the same way (`-k "trajectory"`, `-k "refusal"`, `-k "tool"`,
+`-k "not grounding"` for fully offline).
 
 | Group | Tests | What it checks |
 |---|---|---|
@@ -246,14 +251,45 @@ reuse the `qN-scenario` pattern (`q9`/`q10` = out-of-scope refusals, `q11`
 | `test_answer_stability[qN-pass]` | 9 | Same query ×3 runs: identical under `extractive`, ≥85% similar under `llm` |
 | `test_multi_turn_*` | 3 | History accumulates; capped at `MAX_USER_TURNS`; pronoun follow-up (llm-gated) |
 | `test_llm_backend_smoke` | 1 | Real-model tool-choice smoke test (llm-gated) |
+| `test_extractive_tool_choice` | 4 | Plain asserts: the extractive policy's first step picks the expected tool per query — `list_sections` for coverage questions, `search_knowledge` for topical; asserts the fallback when the second tool is disabled |
+| `test_tool_selection` | 4 | `list_sections`-gated: live run must use the golden's `expected_tools` (`ToolCorrectnessMetric`) |
+| `test_tool_selection_wrong_tool_caught` | 1 | Canned agent answering a coverage question by searching instead → tool correctness **must fail** |
 
-New data in `goldens/agent_extended_goldens.json`. Note: refusal queries
-were chosen so every keyword *stem* (≥4 chars) misses the knowledge base —
-under `extractive`, a stem collision (e.g. "bread"→"brea"→"break") retrieves
-paragraphs and the agent answers instead of refusing. And the trace-reading
-tests — `test_trajectory_and_keywords`, `test_out_of_scope_refusal`, and
-`test_grounding` (20 cases in all) — skip under plain `pytest`: they need
-`deepeval test run`'s per-test trace.
+New data in `goldens/agent_extended_goldens.json` and
+`goldens/agent_tool_selection_goldens.json`. The trace-reading
+tests — `test_trajectory_and_keywords`, `test_out_of_scope_refusal`,
+`test_grounding`, and `test_tool_selection` — also run under plain
+`pytest`: `ensure_trace()` starts a fresh trace when the runner doesn't
+provide one. (`test_agent.py`'s structured layer is different — its span
+metrics are evaluated by the `deepeval test run` plugin, so under plain
+pytest those tests skip cleanly rather than run.)
+
+## Optional: the second tool (`list_sections`)
+
+By default the agent exposes one tool, `search_knowledge`. Setting
+
+```ini
+AGENT_TOOLS=search_knowledge,list_sections
+```
+
+in `.env` adds `list_sections()` — it returns the section outline of
+`agent-knowledge.md`, for meta-questions like *"What topics can you help
+me with?"* that keyword search can't answer. The choice is disjoint from
+existing queries by design (all current goldens are topical), so enabling
+it doesn't reroute anything the suite already covers — verified: the full
+offline subsets pass identically with the flag on and off.
+
+With the flag **off**: the prompt and `STEP_SCHEMA` are exactly the
+two-action contract, and `test_tool_selection`/`test_extractive_tool_choice`
+skip or assert the fallback (nothing breaks, nothing is silently
+untested). With it **on**: the extractive router sends only recognised
+KB-meta phrasing to `list_sections`; everything else still searches. The
+`llm` backend gets a real two-tool choice and its quality depends on the
+model — which is exactly what the selection tests measure.
+
+One structural note: `attach_tool_metrics` validates spans by tool name —
+`list_sections` spans don't take the `search_knowledge` keyword-contract
+validator, which knows nothing about them.
 
 ## test_goldens_from_scratch.py — tutorial-04 artifact
 
@@ -277,12 +313,18 @@ Against hosted `jev-1.13` (three-line `.env` change), where both heads
 behave, it should pass 9/9. Filter it like the others —
 `-k "fail_contradiction"`, `-k "q2"`, etc.
 
-## test_first_eval_geval.py — the OpenAI comparison
+## test_first_eval_geval.py — the LLM-judge comparison
 
 The same context-window eval as `test_first_eval.py`, but judged by
 `GEval` — a generative LLM-as-judge that prompts a model to grade the
 answer. It's the contrast case for the decision-model approach: prose +
 parsing instead of states + probabilities. Does not need the local judge.
+
+**Without a configured LLM judge the test skips cleanly** (a `_judge_model_configured`
+check in the file looks for a real `OPENAI_API_KEY`, `LOCAL_MODEL_*`/`OLLAMA_*`
+env vars, or a provider persisted by `deepeval set-*`). A *real but invalid*
+key still fails at request time — the check can't detect that without
+calling out.
 
 The judge LLM doesn't have to be OpenAI — `GEval` resolves a default model
 from deepeval's provider settings, and any supported provider works,
@@ -327,14 +369,11 @@ processes with no shared state or ordering, so skips won't propagate.
 
 ## Running from Windows Command Prompt (cmd.exe)
 
-The same steps work in `cmd.exe` — only the path separators and the way
-you set `PYTHONUTF8` differ. `set` lasts for the whole window, so you only
-need it once instead of prefixing every command.
+The same steps work in `cmd.exe` — only the path separators differ.
+`conftest.py` already reconfigures the console to UTF-8, so no
+`PYTHONUTF8` dance is needed.
 
 ```bat
-REM once per window: lets the results table print its Unicode marks
-set PYTHONUTF8=1
-
 REM window 1 -- start the judge and leave it running (skip for offline-only runs)
 .venv\Scripts\python run_judge.py
 
@@ -345,7 +384,7 @@ REM same window -- smoke test, then the test files
 .venv\Scripts\deepeval.exe test run test_first_eval.py
 .venv\Scripts\deepeval.exe test run test_agent.py
 .venv\Scripts\deepeval.exe test run test_goldens_from_scratch.py
-.venv\Scripts\deepeval.exe test run test_first_eval_geval.py   REM needs an LLM judge (OPENAI_API_KEY or set-ollama)
+.venv\Scripts\deepeval.exe test run test_first_eval_geval.py   REM skips unless an LLM judge is configured (OPENAI_API_KEY or set-ollama)
 .venv\Scripts\deepeval.exe test run test_agent_extended.py     REM judge needed for grounding tests only
 
 REM or everything at once (--ignore=gitsss avoids duplicate-basename errors)
@@ -364,43 +403,43 @@ REM subsets work the same way
 Notes:
 
 - If `.env` doesn't exist yet: `copy .env.example .env`.
-- Use `set`, not `setx` — `setx` writes the variable permanently and only
-  applies to windows opened afterwards.
-- `chcp 65001` is an alternative to `set PYTHONUTF8=1` for the Unicode
-  output issue; either one works.
+- If you do set env vars per window, use `set`, not `setx` — `setx` writes
+  the variable permanently and only applies to windows opened afterwards.
 
 ## Troubleshooting
 
 - **`UnicodeEncodeError` at the end of the run (Windows):** the results
-  table can't print `⚠`/`✓` through a cp1252 console. Always run with
-  `PYTHONUTF8=1` as shown above (or `chcp 65001` first).
+  table can't print `⚠`/`✓` through a cp1252 console. `conftest.py`
+  reconfigures stdout/stderr to UTF-8 at import, so this no longer needs
+  `PYTHONUTF8=1` (setting it anyway is harmless).
 - **`httpcore2.ReadTimeout` / `RetryError` on the first judge call:** the
   checkpoint is still loading. Check `/health` and rerun once `loaded`
   includes `typed-decisions`.
 - **`import file mismatch` collecting `test_*.py`:** you're running
   against a directory and pytest found `gitsss/`'s duplicate test files.
   Add `--ignore=gitsss` or name the files explicitly.
-- **`OPENAI_API_KEY` errors on `test_first_eval_geval.py` or `generate_*.py`:**
-  expected — those need a real OpenAI key in `.env`; skip them for the
-  offline setup.
+- **`OPENAI_API_KEY` errors on `generate_*.py`:** expected — those need a real
+  OpenAI key in `.env`; skip them for the offline setup.
+  `test_first_eval_geval.py` no longer errors: it *skips* unless an LLM judge
+  is configured (a real `OPENAI_API_KEY`, `LOCAL_MODEL_*`/`OLLAMA_*` env vars,
+  or a provider saved by `deepeval set-*`).
 - **`test_goldens_from_scratch.py` fails under the local judge:**
   expected — it uses `Noul` (broken on `typed-decisions`, laya #156) and
   relies on the score head grading coverage (it reads topical overlap
   instead). It passes against hosted `jev-1.13`.
-- **Extended tests skip under plain `pytest`:** the trajectory, refusal and
-  grounding tests read the per-test trace that only `deepeval test run`
-  creates. Run them through `deepeval test run`, not `pytest`.
-  (`test_llm_backend_smoke` also reads the trace, but it *fails* without
-  one rather than skipping — under the default `extractive` backend it
-  skips anyway because it's `llm`-gated.)
+- **Extended tests under plain `pytest`:** the trajectory, refusal and
+  grounding tests start their own trace via `ensure_trace()` when none is
+  active, so they run under both runners. The judge-dependent tests still
+  need `run_judge.py` either way.
 - **`RetryError`/`TimeoutError` on grounding-style judge calls:** the judge
   request timed out — keep context states small. `GroundingMetric` sends
   one retrieved paragraph per sentence group for exactly this reason; don't
   pass whole tool outputs as `CONTEXT`/`expected_output` states.
-- **An out-of-scope refusal test answers instead of refusing:** under
-  `extractive`, a keyword *stem* matched the KB (e.g. "bread"→"brea"→"break").
-  Pick queries whose keywords and ≥4-char stems are all absent from
-  `agent-knowledge.md`.
+- **An out-of-scope refusal test answers instead of refusing:** keyword stems
+  are now verified (`stem_is_related`): "bread"→"brea" no longer counts when
+  the stem only matched "break". Residual risk: a query word that appears
+  verbatim in `agent-knowledge.md` in an unrelated sense still retrieves a
+  paragraph — pick queries whose keywords are genuinely absent.
 - **portalocker/shared-lock warnings:** benign on Windows unless
   `portalocker[win32]` is installed; result caching still works.
 - **"shows N results, limit is M" structured failure:** the validator reads

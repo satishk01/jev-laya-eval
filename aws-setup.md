@@ -14,9 +14,10 @@ are covered below, but pick Ubuntu for the simplest demo.
 
 - The judge (`laya-serve`) running in a `tmux` session on
   `127.0.0.1:8000`.
-- The full test suite passing: `72 total tests, 100% passed` on
-  `test_agent.py` plus `49 total tests, 100% passed` on the behavioural
-  extension `test_agent_extended.py`.
+- The full test suite passing: `72 total tests, 100% passed` (80 pytest
+  items) on `test_agent.py` plus `50 total tests, 100% passed` (62 pytest
+  items, some gated/skipped) on the behavioural extension
+  `test_agent_extended.py`.
 - Roughly 30 minutes including the one-time ~850 MB model download.
 
 ## Step 1 — launch the instance
@@ -124,9 +125,9 @@ before running the full suite.
 ## Step 8 — run the tests
 
 ```shell
-PYTHONUTF8=1 .venv/bin/deepeval test run test_first_eval.py      # smoke test
-PYTHONUTF8=1 .venv/bin/deepeval test run test_agent.py           # main suite
-PYTHONUTF8=1 .venv/bin/deepeval test run test_agent_extended.py  # behavioural extension
+.venv/bin/deepeval test run test_first_eval.py      # smoke test
+.venv/bin/deepeval test run test_agent.py           # main suite
+.venv/bin/deepeval test run test_agent_extended.py  # behavioural extension
 ```
 
 Expected:
@@ -137,15 +138,18 @@ Expected:
   `typed-decisions`, and rerun.
 - Main suite: `72 total tests, 100% passed`. Budget ~5–8 minutes — the
   judge phase dominates on 2 vCPUs (a laptop does it in ~3–4).
-- Extension: `49 total tests, 100% passed`, plus 2 plain pytest checks and
-  2 `llm`-gated skips — a similar budget; the grounding calls dominate.
+- Extension: `50 total tests, 100% passed`. pytest collects 62 items —
+  6 are plain-assert checks (multi-turn + tool-choice), 4 tool-selection
+  evals skip unless `AGENT_TOOLS=search_knowledge,list_sections` is set
+  (then `54 total`), and 2 skip unless `AGENT_BACKEND=llm`. A similar
+  budget; the grounding calls dominate.
 - Results land in `deepeval_results/test_run_*.json`.
 
 Quick validation that the offline layers work without any judge
 dependency (useful while the checkpoint downloads):
 
 ```shell
-PYTHONUTF8=1 .venv/bin/deepeval test run test_agent.py -k "not judge"   # 48 evals, seconds
+.venv/bin/deepeval test run test_agent.py -k "not judge"   # 48 evals (56 pytest items), seconds
 ```
 
 The repo's other two test files are deliberately **not** part of this run —
@@ -153,8 +157,9 @@ if you run them (or `deepeval test run .`), expect failures for documented
 reasons, not a broken setup: `test_goldens_from_scratch.py` (9 tests) uses
 the `Noul` question form and coverage `Score`s the local checkpoint gets
 wrong — it only passes against hosted `jev-1.13` — and
-`test_first_eval_geval.py` (1 test) needs an LLM judge (`OPENAI_API_KEY`
-or a local Ollama model). See [how-to-test.md](how-to-test.md) for every
+`test_first_eval_geval.py` (1 test) needs an LLM judge and *skips*
+cleanly when none is configured (`OPENAI_API_KEY` or a local Ollama model).
+See [how-to-test.md](how-to-test.md) for every
 file and `-k` filter — layer subsets, per-query, per-failure-mode — plus
 what each layer checks.
 

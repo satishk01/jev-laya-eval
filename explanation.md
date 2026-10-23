@@ -44,14 +44,19 @@ plus a loop:
 user query ──► LLM produces a JSON "step": {thought, action, keywords, answer}
                   │
                   ├─ action = "search_knowledge" ──► run tool, feed results back ──► next step
+                  │    ("list_sections" too, when enabled via AGENT_TOOLS)
                   │
                   └─ action = "final_answer"      ──► return answer
 ```
 
-- **One tool**: `search_knowledge(keywords)` — keyword search over the
+- **Tools**: `search_knowledge(keywords)` — keyword search over the
   paragraphs of `agent-knowledge.md` (our "knowledge base", a curated doc on
   AI engineering topics: PII, temperature/top-p, memory, tokens, RAG,
   observability, etc.). Tool contract: 1–5 keywords, each a single word.
+  An optional second tool, `list_sections()`, returns the knowledge base's
+  section outline for meta-questions ("What topics do you cover?"); it is
+  enabled via `AGENT_TOOLS=search_knowledge,list_sections` and is off by
+  default (see §5.5).
 - **Guardrails**: `MAX_STEPS = 5` ReAct steps per query,
   `MAX_SEARCH_RESULTS = 24` paragraphs per search, last 5 user turns of
   context.
@@ -150,9 +155,12 @@ carries an `input` (the user query) plus whichever of
 `actual_output` / `expected_output` / `tools_called` / `expected_tools` /
 `context` the layer needs, and `additional_metadata` with:
 
-- `question_id` — which of the 8 fixed queries (q1–q8) it belongs to
+- `question_id` — the query it belongs to (`q1`–`q8` in the layered suite;
+  the extended files add `q9`–`q11` and `q20`–`q23`)
 - `scenario` — `pass`, `fail_contradiction`, `fail_incomplete`,
-  `fail_invalid_keywords`, `fail_irrelevant_results`, `fail_no_tool_call`
+  `fail_invalid_keywords`, `fail_irrelevant_results`, `fail_no_tool_call`;
+  the extended goldens add `refuse_out_of_scope`, `fail_answered_anyway`,
+  and `kind`-tagged records (`multipart`, `tool_selection`)
 - `expected_verdict` — what the eval *should* conclude
 - `section` — the knowledge-base section the query was generated from
 
@@ -165,6 +173,7 @@ carries an `input` (the user query) plus whichever of
 | `agent_judge_pass_goldens.json` | 8 (1/query) | judge layer | `expected_output` = full reference answer; `actual_output` left empty — the live agent answers |
 | `agent_judge_fail_goldens.json` | 16 (2/query) | judge layer | `actual_output` = canned `fail_contradiction` and `fail_incomplete` answers |
 | `agent_extended_goldens.json` | 4 | `test_agent_extended.py` | 2 out-of-scope refusal queries (q9, q10), 1 canned "answered anyway" negative, 1 multi-part in-scope query (q11) |
+| `agent_tool_selection_goldens.json` | 4 | `test_agent_extended.py` | `expected_tools` per query — `list_sections` for 3 coverage questions, `search_knowledge` for 1 topical control (q20–q23) |
 | `ai_engineering_goldens.json` | 9 (3 questions × 3 scenarios) | `test_goldens_from_scratch.py` | self-contained: input + actual + expected in every record |
 
 **Where they came from** (regenerate only if needed — requires an LLM,
@@ -357,21 +366,25 @@ decision model returning probabilities over states.
 
 **Why it exists:** the contrast case. It lets you compare, on the same
 input, the two judging philosophies — `GEval`'s prose+parse approach vs.
-Jev's structured questions+probabilities. Requires `OPENAI_API_KEY`, or a
-local model (`deepeval set-ollama`, `LOCAL_MODEL_*` env vars, or an
-explicit `model=` in code). It does *not* use `run_judge.py`.
+Jev's structured questions+probabilities. Runs when `OPENAI_API_KEY` is a
+real key, or a local model is configured (`deepeval set-ollama`,
+`LOCAL_MODEL_*`/`OLLAMA_*` env vars, or an explicit `model=` in code);
+**skips cleanly when none is** (`_judge_model_configured` checks env vars
+and deepeval's persisted provider config). It does *not* use
+`run_judge.py`.
 
-### 5.5 `test_agent_extended.py` — the behavioural extension (53 tests)
+### 5.5 `test_agent_extended.py` — the behavioural extension (62 tests)
 
 ```
-deepeval test run test_agent_extended.py   →  51 passed, 2 llm-gated skips, ~3.5 min
+deepeval test run test_agent_extended.py   →  ~3.5 min; judge needed for grounding only
 ```
 
 The main suite checks tool-call *form* and answer *quality*; this file
 probes how the agent *behaves*. It adds five small custom metrics (same
 `expected_pass` plumbing as the `*_util` metrics) plus plain pytest checks
 where a metric adds nothing. Data: `goldens/agent_extended_goldens.json`
-plus the existing judge pass/fail sets.
+and `goldens/agent_tool_selection_goldens.json`, plus the existing judge
+pass/fail sets.
 
 | Test | Count | What it proves |
 |---|---|---|
@@ -386,6 +399,9 @@ plus the existing judge pass/fail sets.
 | `test_answer_stability[qN-pass]` | 9 | 3 fresh runs per query: identical under `extractive`, ≥85% pairwise RapidFuzz under a real model; also fails if any run hits the `MAX_STEPS` fallback or refuses an in-scope question (`StabilityMetric`) |
 | `test_multi_turn_history_accumulates` / `test_multi_turn_window_capped` | 2 | Plain pytest: history keeps both turns; capped at `MAX_USER_TURNS` after 7 queries |
 | `test_multi_turn_followup` / `test_llm_backend_smoke` | 2 | `skipif` unless `AGENT_BACKEND=llm`: pronoun follow-up resolution, and a real-model tool-choice smoke test |
+| `test_extractive_tool_choice[qN]` | 4 | Plain pytest (no trace needed): the extractive policy's first step picks the expected tool — `list_sections` for coverage questions, `search_knowledge` for topical ones. With the second tool disabled it asserts the flag-off fallback instead |
+| `test_tool_selection[qN]` | 4 | `skipif` unless `AGENT_TOOLS` enables `list_sections`. Live run: `ToolCorrectnessMetric` matches the golden's `expected_tools` — real multi-tool selection, verified end to end |
+| `test_tool_selection_wrong_tool_caught` | 1 | Canned agent answering a coverage question with keyword search → tool correctness **must fail** — wrong tool, even though it "tried" |
 
 **Two lessons baked into the grounding check** (both measured, not
 guessed):
@@ -397,24 +413,34 @@ guessed):
   their most-overlapping retrieved paragraph and judges each against that
   *single* paragraph (≤4 questions/call): same decompose-and-verify rule,
   applied to context. A contradiction then scores ~0.34 → caught.
-- Out-of-scope queries must have *zero* keyword-stem hits in the knowledge
-  base: the extractive backend's stem fallback turned "bread" into `"brea"`,
+- The extractive backend's stem fallback once turned "bread" into `"brea"`,
   which matched "break"-family words and produced an answer instead of a
-  refusal. That's why q10 is "How deep is the Mariana Trench?" — `deep`,
-  `mariana`, `trench` and all their ≥4-char stems are absent from the KB.
+  refusal. Stems are now verified (`stem_is_related` in `agent.py`): a stem
+  is only used if the words it matched share the query word's lexeme —
+  same Porter stem, or a RapidFuzz ratio ≥ 85 ("bread"~"break" scores 80,
+  real spelling variants like "summarization"~"summarisation" score ~96).
+  Residual risk: a query word that appears *verbatim* in the knowledge base
+  in an unrelated sense still retrieves paragraphs — genuine out-of-scope
+  queries should use words absent from `agent-knowledge.md`.
 
-Still not covered (structural): true multi-tool selection (one tool exists),
-and real-LLM decision-making (the `llm`-gated tests cover it only when
-configured).
+**Multi-tool selection** is covered when the opt-in second tool is enabled:
+`AGENT_TOOLS=search_knowledge,list_sections` gives the agent a real choice
+between `search_knowledge` and `list_sections`, and the selection tests
+above verify the routing both ways. With the default single tool, the only
+"selection" is search-before-answering, which the trajectory check asserts.
+Not covered: real-LLM decision-making (the `llm`-gated tests cover it only
+when configured).
+
+**Traces under plain `pytest`:** the trace-reading tests call `ensure_trace()`,
+which uses the per-test trace `deepeval test run` provides, or starts a fresh
+`deepeval.tracing.trace()` when there is none — so they run under both
+runners. (A manually started trace just isn't posted to Confident AI.)
 
 ---
 
 ## 6. What each command does and what to expect
 
 ```bat
-REM once per window — lets the results table print ✓/⚠ on cp1252 consoles
-set PYTHONUTF8=1
-
 REM window 1 — start the local judge, leave running (skip for offline runs)
 .venv\Scripts\python run_judge.py
 
@@ -422,8 +448,8 @@ REM window 2 — smoke test, then the suite
 .venv\Scripts\deepeval.exe test run test_first_eval.py            REM 1 test,  judge needed
 .venv\Scripts\deepeval.exe test run test_agent.py                 REM 80 tests, judge for judge layer only
 .venv\Scripts\deepeval.exe test run test_goldens_from_scratch.py  REM 9 tests,  judge needed, fails under local Laya (known limitation)
-.venv\Scripts\deepeval.exe test run test_first_eval_geval.py      REM 1 test,   LLM judge needed (OPENAI_API_KEY or set-ollama)
-.venv\Scripts\deepeval.exe test run test_agent_extended.py        REM 53 tests, judge for grounding only
+.venv\Scripts\deepeval.exe test run test_first_eval_geval.py      REM 1 test,   skips unless an LLM judge is configured
+.venv\Scripts\deepeval.exe test run test_agent_extended.py        REM 62 tests, judge for grounding only
 
 REM everything at once (--ignore=gitsss skips a clone of the project whose
 REM duplicate test_*.py basenames break pytest collection)
@@ -485,30 +511,42 @@ Probabilities: ..."` or `"3/5 key phrase requirements met ..."`).
 
 ## 8. Known limitations (so you're not surprised)
 
+These are the checkpoint's own weaknesses — they can't be fixed locally,
+only worked around (the suite does) or avoided (hosted `jev-1.13`):
+
 - `test_goldens_from_scratch.py` **fails under the local Laya checkpoint**
-  — `Noul` question form is broken (laya#156) and its `Score` head can't
-  grade coverage. Passes on hosted `jev-1.13`.
+  — the `Noul` question form reads the `false:`/`true:` label token instead
+  of the state (laya#156, still open in laya 0.4.13), and its `Score` head
+  can't grade coverage. Passes on hosted `jev-1.13`.
 - The judge measures **topical overlap more than coverage**, so
   `fail_incomplete` in the judge layer reports completeness without gating
   on it — the fuzzy layer owns incomplete-answer gating.
 - The judge also **misses contradictions against large context states** —
   which is why `GroundingMetric` checks each sentence against a single
   best-matching paragraph instead of the whole retrieval.
-- Under the `extractive` backend, **refusal is only guaranteed when no
-  keyword stem matches the KB** — stems like "brea" for "bread" can match
-  unrelated words ("break") and produce an answer instead of a refusal.
-- The extended file doesn't cover **multi-tool selection** (the agent has
-  one tool) — needs an agent change to test.
-- Trace-reading tests (`test_trajectory_*`, `test_out_of_scope_refusal`,
-  `test_grounding`) **skip under plain `pytest`** — they need the per-test
-  trace only `deepeval test run` sets up. (`test_llm_backend_smoke` reads
-  the trace too, but *fails* rather than skips when it's absent.)
 - First judge request after starting `run_judge.py` can take a minute or
-  two (checkpoint loads lazily); check `curl http://127.0.0.1:8000/health`.
-- Without `PYTHONUTF8=1`, the results table crashes printing Unicode marks
-  on a cp1252 Windows console.
-- `test_first_eval_geval.py` needs a real LLM judge key/config; it errors
-  without one — expected.
+  two (checkpoint loads lazily; `run_judge.py` sets `LAYA_PRELOAD=0` —
+  flip it to 1 to pay the cost at startup instead). Check
+  `curl http://127.0.0.1:8000/health`.
+
+What used to be on this list and is now fixed:
+
+- ~~Extractive stem false-matches~~ — stems are verified (`stem_is_related`):
+  "bread"→"brea"→"break" no longer produces an answer. Residual: a query
+  word that appears *verbatim* in the KB in an unrelated sense still matches.
+- ~~Multi-tool selection untested~~ — `AGENT_TOOLS=search_knowledge,list_sections`
+  enables a second tool and the extended file's selection tests.
+- ~~Trace tests skip under plain `pytest`~~ — `ensure_trace()` starts a
+  fresh trace when none exists. The *structured* layer in `test_agent.py`
+  still needs `deepeval test run` (its span metrics are evaluated by the
+  test-run plugin) and now **skips cleanly** there instead of erroring.
+- ~~`PYTHONUTF8=1` required~~ — `conftest.py` reconfigures stdout/stderr to
+  UTF-8 at import; setting it anyway is harmless.
+- ~~`test_first_eval_geval.py` errors without a key~~ — it **skips** unless
+  an LLM judge is configured (real `OPENAI_API_KEY`, `LOCAL_MODEL_*`/
+  `OLLAMA_*` env vars, or a provider saved by `deepeval set-*`). A *real
+  but invalid* key still fails at request time — the skip can't detect
+  that without calling out.
 
 ---
 
@@ -516,20 +554,21 @@ Probabilities: ..."` or `"3/5 key phrase requirements met ..."`).
 
 | File | Role |
 |---|---|
-| `agent.py` | System under test: ReAct loop, `search_knowledge` tool, `llm`/`extractive` backends, `@observe` tracing |
+| `agent.py` | System under test: ReAct loop, `search_knowledge` + opt-in `list_sections` tools (`AGENT_TOOLS`), `llm`/`extractive` backends, `@observe` tracing |
 | `agent-knowledge.md` | The knowledge base the agent searches (source of truth for its answers) |
 | `run_judge.py` | Starts the local judge (Laya served over the Jev `/v1/systemone` protocol) |
 | `test_first_eval.py` | 1-test smoke test of the judge pipeline |
 | `test_agent.py` | The 80-test layered suite (structured → fuzzy → judge, fail-fast) |
 | `test_goldens_from_scratch.py` | 9-test flat judge suite; known-failing under local Laya |
 | `test_first_eval_geval.py` | 1-test GEval comparison of judge styles |
-| `test_agent_extended.py` | 53-test behavioural extension: trajectory, keyword quality, refusal, grounding, multi-turn, variance, multi-part |
+| `test_agent_extended.py` | 62-test behavioural extension: trajectory, keyword quality, refusal, grounding, multi-turn, variance, multi-part, tool selection (opt-in) |
 | `deepeval_jev_util.py` | `SharedJevDecision` (one judge call shared across metrics), `JevQuestionMetric` (per-question reporting) |
 | `deepeval_fuzzy_util.py` | `FuzzyMatchMetric` + the exact → RapidFuzz → stemmed BLEU/ROUGE matching cascade |
-| `deepeval_tool_util.py` | `ToolCallValidationMetric`, `ExpectedVerdictMetric`, trace helpers (`attach_tool_metrics`, `record_tools_called`) |
-| `goldens/*.json` | The test data (see §4) |
+| `deepeval_tool_util.py` | `ToolCallValidationMetric`, `ExpectedVerdictMetric`, trace helpers (`attach_tool_metrics`, `record_tools_called`, `tool_spans`) |
+| `conftest.py` | Reconfigures stdout/stderr to UTF-8 so the results table prints its Unicode marks on cp1252 consoles without `PYTHONUTF8=1` |
+| `goldens/*.json` | The test data (see §4), incl. `agent_tool_selection_goldens.json` for the opt-in second tool |
 | `generate_*.py` | Golden-set generators (need an LLM; outputs are committed) |
-| `.env` / `.env.example` | Judge backend (`TYPESAFE_*`), agent backend (`AGENT_BACKEND`, `INFERENCE_*`), `OPENAI_API_KEY`, `DEEPEVAL_RESULTS_FOLDER` |
+| `.env` / `.env.example` | Judge backend (`TYPESAFE_*`), agent backend (`AGENT_BACKEND`, `AGENT_TOOLS`, `INFERENCE_*`), `OPENAI_API_KEY`, `DEEPEVAL_RESULTS_FOLDER` |
 | `deepeval_results/` | Per-run JSON results with per-metric scores and reasons |
 | `how-to-test.md` | The runbook: commands, flags, troubleshooting |
 | `jev-eval-technical-guide.md` | Deeper reference on the Jev/judge mechanics |

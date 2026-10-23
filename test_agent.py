@@ -27,6 +27,7 @@ from deepeval.metrics import JevEval, ToolCorrectnessMetric
 from deepeval.metrics.jev_eval import Choice, Score
 from deepeval.test_case import LLMTestCase, SingleTurnParams
 from deepeval.tracing import observe, update_current_span
+from deepeval.tracing.context import current_trace_context
 
 import agent
 from deepeval_fuzzy_util import FuzzyMatchMetric
@@ -217,6 +218,10 @@ def answer_for(golden: Golden) -> str:
 
 
 def run_structured(golden: Golden) -> None:
+    # Span metrics are evaluated by `deepeval test run`'s per-test trace
+    # machinery; under plain pytest there is no trace to attach them to.
+    if current_trace_context.get() is None:
+        pytest.skip("no deepeval trace: run via `deepeval test run`, not plain pytest")
     # Runs inside the test's DeepEval trace, so the agent's spans are recorded
     # there. The live agent runs fresh, and fills the answer cache for the
     # later layers.

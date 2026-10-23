@@ -25,7 +25,7 @@ from typing import List, Optional
 from deepeval.metrics import BaseMetric
 from deepeval.test_case import LLMTestCase, ToolCall
 from deepeval.tracing.context import current_trace_context
-from deepeval.tracing.types import BaseSpan, ToolSpan
+from deepeval.tracing.types import BaseSpan, ToolSpan, Trace
 
 RESULT_SEPARATOR = "\n\n---\n\n"
 SUMMARY_PATTERN = re.compile(r"(\d+) paragraphs matched; showing (\d+)\.")
@@ -199,9 +199,11 @@ class ExpectedVerdictMetric(BaseMetric):
         return self.name
 
 
-def tool_spans() -> List[ToolSpan]:
-    """All tool spans in the current deepeval trace (the running test's trace)."""
-    trace = current_trace_context.get()
+def tool_spans(trace: Optional["Trace"] = None) -> List[ToolSpan]:
+    """All tool spans in the current deepeval trace (the running test's trace),
+    or in `trace` when given explicitly -- e.g. a manually started trace whose
+    context var @observe teardown already reset."""
+    trace = trace or current_trace_context.get()
     spans: List[BaseSpan] = list(trace.root_spans or []) if trace else []
     found = []
     while spans:
@@ -212,11 +214,14 @@ def tool_spans() -> List[ToolSpan]:
     return found
 
 
-def attach_tool_metrics(max_results: int, expected_pass: Optional[bool] = True) -> int:
-    """Attach a fresh ToolCallValidationMetric to every tool span in the
+def attach_tool_metrics(
+    max_results: int, expected_pass: Optional[bool] = True, tool_name: str = "search_knowledge"
+) -> int:
+    """Attach a fresh ToolCallValidationMetric to every `tool_name` span in the
     current trace, so `assert_test(golden=...)` evaluates them. Returns the
-    number of tool spans found."""
-    spans = tool_spans()
+    number of matching tool spans found. Other tools' spans are left alone:
+    the keyword contract this validates is search_knowledge's."""
+    spans = [s for s in tool_spans() if s.name == tool_name]
     for span in spans:
         span.metrics = [ToolCallValidationMetric(max_results=max_results, expected_pass=expected_pass)]
     return len(spans)

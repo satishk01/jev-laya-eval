@@ -16,6 +16,9 @@ Configuration (from .env):
     INFERENCE_MODEL_NAME  model id
     INFERENCE_API_STYLE   "responses" (OpenAI Responses API) or "chat"
                           (chat completions, for Ollama/LM Studio/vLLM etc.)
+    AGENT_TOOLS           comma list; "search_knowledge" is always on. Add
+                          "list_sections" to give the agent a second tool that
+                          returns the knowledge base's section outline.
 
 Usage:
     uv run agent.py            # one query per line; /exit or Ctrl-D to quit
@@ -34,6 +37,9 @@ from typing import Optional
 # normal runs. Set before importing deepeval, which reads it at startup.
 os.environ.setdefault("CONFIDENT_TRACE_VERBOSE", "0")
 
+from nltk.stem import PorterStemmer  # noqa: E402
+from rapidfuzz import fuzz  # noqa: E402
+
 from deepeval.tracing import observe, update_current_span  # noqa: E402
 from dotenv import load_dotenv
 from openai import OpenAI, OpenAIError
@@ -51,11 +57,33 @@ MAX_SEARCH_RESULTS = 24  # paragraphs per search, so a broad keyword can't retur
 MAX_SEARCH_KEYWORDS = 5  # the tool's contract, mirrored in STEP_SCHEMA below
 VERBOSE = "-v" in sys.argv[1:]
 
-SYSTEM_PROMPT = """You are a helpful assistant that answers beginner questions about AI engineering.
+# Tools the agent may call. search_knowledge is always on; list_sections (the
+# knowledge base's own section outline, for "what topics do you cover" style
+# meta-questions keyword search can't answer) is opt-in.
+TOOLS = {"search_knowledge"} | {
+    t.strip() for t in os.environ.get("AGENT_TOOLS", "").split(",") if t.strip()
+}
+ACTIONS = ["search_knowledge", "final_answer"]
+if "list_sections" in TOOLS:
+    ACTIONS.insert(1, "list_sections")
+
+_ACTION_DESC = (
+    'either "search_knowledge" or "final_answer"'
+    if len(ACTIONS) == 2
+    else "one of " + ", ".join(f'"{a}"' for a in ACTIONS)
+)
+_LIST_SECTIONS_PROMPT = """
+The "list_sections" action returns the knowledge base's section outline -- use
+it for questions about what the knowledge base covers ("What topics do you know
+about?"), not for questions about the topics themselves. It takes no input, so
+"keywords" stays [].
+""" if "list_sections" in TOOLS else ""
+
+SYSTEM_PROMPT = f"""You are a helpful assistant that answers beginner questions about AI engineering.
 
 You work in a ReAct loop. Each reply is one step, as JSON:
 - "thought": brief reasoning about what to do next.
-- "action": either "search_knowledge" or "final_answer".
+- "action": {_ACTION_DESC}.
 - "keywords": for "search_knowledge", 1-5 single-word keywords to search for, otherwise [].
 - "answer": the answer for the user when action is "final_answer", otherwise "".
 
@@ -66,7 +94,7 @@ keyword also matches words that start with it, so "token" matches "tokens".
 Prefer specific terms and synonyms (e.g. "RAG", "retrieval") over generic
 words like "model". If the results are not enough, search again with
 different keywords.
-
+{_LIST_SECTIONS_PROMPT}
 Search before answering any question about AI engineering, unless the relevant
 passages are already present in this conversation. Base your answers on the
 knowledge base. If it does not cover the question, say so rather than guessing.
@@ -83,7 +111,7 @@ STEP_SCHEMA = {
     "type": "object",
     "properties": {
         "thought": {"type": "string"},
-        "action": {"type": "string", "enum": ["search_knowledge", "final_answer"]},
+        "action": {"type": "string", "enum": ACTIONS},
         # Enforces the tool's contract during decoding: at most 5 keywords, each
         # a single word (no whitespace). Empty for final_answer, so no minItems.
         "keywords": {
@@ -133,7 +161,7 @@ def word_pattern(word: str) -> re.Pattern:
 
 @observe(type="tool")
 def search_knowledge(keywords: list[str]) -> str:
-    """The agent's only tool: keyword search over the knowledge base paragraphs."""
+    """The agent's default tool: keyword search over the knowledge base paragraphs."""
     # The span records the keywords exactly as the model sent them, as JSON.
     update_current_span(input=to_json({"keywords": keywords}))
     # Phrases are split into words, so "RAG chunking" searches for "RAG" and "chunking".
@@ -158,6 +186,25 @@ def search_knowledge(keywords: list[str]) -> str:
     ]
     summary = f"{len(matches)} paragraphs matched; showing {len(top)}."
     return "\n\n---\n\n".join([summary] + results)
+
+
+@observe(type="tool")
+def list_sections() -> str:
+    """Opt-in second tool: the knowledge base's section outline.
+
+    Answers meta-questions about coverage ("What topics do you know about?"),
+    which search_knowledge can't -- no paragraph in the file describes the
+    file's own contents. Enabled via AGENT_TOOLS=search_knowledge,list_sections.
+    """
+    update_current_span(input=to_json({}))
+    seen: set[str] = set()
+    sections = []
+    for headings, _ in knowledge_paragraphs():
+        for heading in headings:
+            if heading.startswith("## ") and heading not in seen:
+                seen.add(heading)
+                sections.append(heading[3:])
+    return f"{len(sections)} sections:\n" + "\n".join(f"- {s}" for s in sections)
 
 
 def make_client() -> Optional[OpenAI]:
@@ -191,6 +238,37 @@ def match_count(pattern: re.Pattern) -> int:
     return sum(1 for _, text in knowledge_paragraphs() if pattern.search(text))
 
 
+_stemmer = PorterStemmer()
+# A stem only counts as a keyword when it matched words of the query word's own
+# lexeme -- otherwise "brea" (from "bread") happily prefix-matches "break" and
+# an out-of-scope query gets an answer instead of a refusal.
+STEM_RELATED_CUTOFF = 85  # rapidfuzz ratio; "bread"~"break" is 80, real spelling variants score 90+
+
+
+def stem_surface_words(stem: str) -> set[str]:
+    """The whole words in the knowledge base a stem prefix-matches."""
+    pattern = re.compile(r"\b" + re.escape(stem) + r"\w*", re.IGNORECASE)
+    return {
+        m.group(0).lower()
+        for _, text in knowledge_paragraphs()
+        for m in pattern.finditer(text)
+    }
+
+
+def stem_is_related(stem: str, word: str) -> bool:
+    """Whether the words a stem matched plausibly share the query word's lexeme:
+    "summari" hits "summarisation" for "summarization", but "brea" only hits
+    "break" for "bread". Porter stems cover morphological variants
+    ("moving"~"move"), fuzzy ratio covers spelling variants the stemmer splits
+    ("summarization"~"summarisation")."""
+    base = _stemmer.stem(word.lower())
+    return any(
+        _stemmer.stem(matched) == base
+        or fuzz.ratio(word.lower(), matched) >= STEM_RELATED_CUTOFF
+        for matched in stem_surface_words(stem)
+    )
+
+
 def keyword_variants(word: str) -> set[str]:
     """A query word as searchable keyword(s): its singular form, hyphen-separated
     parts, or its longest stem that occurs in the knowledge base.
@@ -199,7 +277,9 @@ def keyword_variants(word: str) -> set[str]:
     finds "a trace", "sliding-window" finds "sliding window", and
     "summarization" finds "summarisation". A shorter matching form dominates
     the word itself because the tool's match is a prefix match, so the stem
-    also covers the word.
+    also covers the word. A stem that only matched unrelated words is
+    rejected -- the full word is searched instead, so out-of-scope queries
+    still reach the refusal path.
     """
     if "-" in word:
         parts = {p for p in word.split("-") if len(p) > 1 and match_count(word_pattern(p))}
@@ -212,8 +292,9 @@ def keyword_variants(word: str) -> set[str]:
     if match_count(word_pattern(word)):
         return {word}
     for cut in range(len(word) - 1, 3, -1):
-        if match_count(word_pattern(word[:cut])):
-            return {word[:cut]}
+        stem = word[:cut]
+        if match_count(word_pattern(stem)) and stem_is_related(stem, word):
+            return {stem}
     return {word}
 
 
@@ -240,6 +321,21 @@ def extractive_keywords(query: str) -> list[str]:
     return keywords
 
 
+# A query asks about the knowledge base's own coverage rather than a topic
+# inside it -- disjoint from every topical query by design, so routing these
+# to list_sections never steals a query search_knowledge would have answered.
+META_QUERY_PATTERNS = (
+    r"\bwhat (?:can|do|does) you\b",
+    r"\b(?:topics?|sections?|subjects?|areas|categories)\b[^?]*\b(?:cover|list|offer|have|know|answer|support)\b",
+    r"\b(?:cover|list|show|tell)\b[^?]*\b(?:topics?|sections?|subjects?|areas|categories)\b",
+    r"\bknowledge base\b[^?]*\b(?:cover|contain|include|about|offer|have|list)\b",
+)
+
+
+def wants_section_listing(query: str) -> bool:
+    return any(re.search(p, query, re.IGNORECASE) for p in META_QUERY_PATTERNS)
+
+
 def extractive_step(turn: list[dict]) -> dict:
     """The extractive backend's ReAct step: real search calls, a stitched answer.
 
@@ -251,7 +347,33 @@ def extractive_step(turn: list[dict]) -> dict:
         for m in turn
         if m["role"] == "user" and m["content"].startswith("Observation from search_knowledge:")
     ]
+    section_observations = [
+        m["content"].split(":", 1)[1]
+        for m in turn
+        if m["role"] == "user" and m["content"].startswith("Observation from list_sections:")
+    ]
     words = extractive_keywords(query)
+
+    if "list_sections" in TOOLS and wants_section_listing(query):
+        if not section_observations:
+            return {
+                "thought": "The query asks what the knowledge base covers; listing its sections.",
+                "action": "list_sections",
+                "keywords": [],
+                "answer": "",
+            }
+        listing = section_observations[-1].strip()
+        items = [
+            line[2:].strip() for line in listing.splitlines() if line.startswith("- ")
+        ]
+        return {
+            "thought": "The section outline answers the question.",
+            "action": "final_answer",
+            "keywords": [],
+            "answer": f"The knowledge base covers {len(items)} sections: "
+            + ", ".join(items)
+            + ".",
+        }
     if not observations:
         keywords = words[:5] or ["model"]
         return {
@@ -264,10 +386,22 @@ def extractive_step(turn: list[dict]) -> dict:
     if all(o.startswith("No paragraphs matched") for o in observations):
         if len(observations) == 1:
             # Retry once, like the system prompt says: split hyphenated terms
-            # and fall back to the longest word stems.
+            # and fall back to the longest word stems -- verified, so a stem
+            # can't resurface unrelated words ("brea" matching "break").
             retried = [
                 w for word in words for w in word.split("-") if w.lower() not in STOPWORDS
-            ] or [w[:7] for w in sorted(words, key=len, reverse=True)[:2]]
+            ] or [
+                w[:7]
+                for w in sorted(words, key=len, reverse=True)
+                if len(w) > 7 and stem_is_related(w[:7], w)
+            ][:2]
+            if not retried:
+                return {
+                    "thought": "The knowledge base does not cover this question.",
+                    "action": "final_answer",
+                    "keywords": [],
+                    "answer": "Sorry I cannot help with that.",
+                }
             return {
                 "thought": "Nothing matched; retrying with simpler keywords.",
                 "action": "search_knowledge",
@@ -488,12 +622,18 @@ def answer_query(client: OpenAI, history: list[list[dict]], query: str) -> str:
             if step["action"] == "final_answer":
                 return step["answer"]
 
-            show(f"> > tool: search_knowledge {to_json({'keywords': step['keywords']})}")
-            observation = search_knowledge(step["keywords"])
+            action = step["action"]
+            show(f"> > tool: {action} {to_json({'keywords': step['keywords']})}")
+            if action == "search_knowledge":
+                observation = search_knowledge(step["keywords"])
+            elif action == "list_sections" and "list_sections" in TOOLS:
+                observation = list_sections()
+            else:
+                observation = f"Unknown tool: {action}. Use one of: {', '.join(sorted(TOOLS))}."
             # Display only: the model still gets the full observation.
-            show(f"< < tool: search_knowledge {to_json(truncate_values(observation))}")
+            show(f"< < tool: {action} {to_json(truncate_values(observation))}")
             log(f"[keywords] {step['keywords']}\n[observation] {observation.splitlines()[0]}")
-            turn.append({"role": "user", "content": f"Observation from search_knowledge:\n{observation}"})
+            turn.append({"role": "user", "content": f"Observation from {action}:\n{observation}"})
     except Exception:
         history.remove(turn)  # don't keep a half-finished turn in the context
         raise

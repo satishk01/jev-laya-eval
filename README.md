@@ -2,8 +2,9 @@
 
 An evaluation suite for [`agent.py`](agent.py) — a small ReAct agent that
 answers beginner AI-engineering questions by searching a Markdown knowledge
-base ([`agent-knowledge.md`](agent-knowledge.md)) with a single tool,
-`search_knowledge(keywords)`.
+base ([`agent-knowledge.md`](agent-knowledge.md)) with a default tool,
+`search_knowledge(keywords)` (an optional second tool, `list_sections`,
+is enabled via `AGENT_TOOLS` — see below).
 
 The suite checks the agent in layers, cheapest first:
 
@@ -18,10 +19,11 @@ The suite checks the agent in layers, cheapest first:
 
 plus a **behavioural extension** (`test_agent_extended.py`) — trajectory/step
 budgets, keyword relevance, the out-of-scope refusal path, grounding vs.
-retrieved paragraphs, multi-turn memory, and answer stability.
+retrieved paragraphs, multi-turn memory, answer stability, and (when the
+opt-in second tool is enabled) tool selection.
 
 Every layer is fed planted-failure goldens it must *catch*, so the suite also
-verifies the eval harness itself. 144 tests across five files.
+verifies the eval harness itself. 153 tests across five files.
 
 ## Quick start
 
@@ -40,19 +42,35 @@ python run_judge.py             # serves Laya on http://127.0.0.1:8000
 curl http://127.0.0.1:8000/health   # wait for "loaded": ["typed-decisions"]
 
 # 4. run the suite (terminal 2)
-PYTHONUTF8=1 deepeval test run test_agent.py           # layered suite
-PYTHONUTF8=1 deepeval test run test_agent_extended.py  # behavioural extension
+deepeval test run test_agent.py           # layered suite: 72 eval cases / 80 pytest items
+deepeval test run test_agent_extended.py  # behavioural extension: 50 evals / 62 pytest items
 ```
 
-Expected: `72 total tests, 100% passed` and `49 total tests, 100% passed`
+(`PYTHONUTF8=1` is no longer needed — `conftest.py` reconfigures the
+console to UTF-8, so the results table's `✓`/`⚠` marks print fine on
+Windows cp1252 consoles.)
+
+Expected: `72 total tests, 100% passed` and `50 total tests, 100% passed`
 respectively (a few minutes — the judge calls dominate). To run the agent
 interactively instead: `python agent.py` (`/exit` to quit).
 
 Fully offline subset, no judge needed:
 
 ```shell
-PYTHONUTF8=1 deepeval test run test_agent.py -k "not judge"
+deepeval test run test_agent.py -k "not judge"   # 48 evals in seconds
 ```
+
+## Optional: a second tool (`list_sections`)
+
+By default the agent exposes only `search_knowledge`. Setting
+`AGENT_TOOLS=search_knowledge,list_sections` in `.env` adds
+`list_sections()` — it returns the knowledge base's section outline, for
+meta-questions like "What topics can you help me with?" — and unskips the
+tool-selection tests in `test_agent_extended.py` (`54 total tests` instead
+of 50). Enabling it does not reroute any existing query: the flag-off
+prompt and schema are byte-for-byte the original two-action contract, and
+the extractive router only sends recognised KB-meta phrasing to the new
+tool.
 
 ## Documentation
 
@@ -67,12 +85,13 @@ PYTHONUTF8=1 deepeval test run test_agent.py -k "not judge"
 
 | File | Role |
 |---|---|
-| `agent.py` | System under test: ReAct loop, `search_knowledge` tool, `llm` and deterministic `extractive` backends |
+| `agent.py` | System under test: ReAct loop, `search_knowledge` tool (+ opt-in `list_sections` via `AGENT_TOOLS`), `llm` and deterministic `extractive` backends |
 | `run_judge.py` | Launches the local Laya judge (Jev `/v1/systemone` wire protocol) |
 | `test_agent.py` | The layered suite: structured → fuzzy → judge, fail-fast per query |
-| `test_agent_extended.py` | Behavioural extension: trajectory, keyword quality, refusal, grounding, multi-turn, stability |
-| `test_first_eval.py` / `test_first_eval_geval.py` | Judge-connection smoke tests (JevEval and GEval comparison) |
+| `test_agent_extended.py` | Behavioural extension: trajectory, keyword quality, refusal, grounding, multi-turn, stability, tool selection |
+| `test_first_eval.py` / `test_first_eval_geval.py` | Judge-connection smoke tests (JevEval and GEval comparison; GEval skips unless an LLM judge is configured) |
 | `test_goldens_from_scratch.py` | Flat judge suite over synthesized goldens (known-failing under local Laya — see how-to-test.md) |
 | `deepeval_{tool,fuzzy,jev}_util.py` | The custom metrics and trace plumbing |
+| `conftest.py` | UTF-8 stdout/stderr fix for cp1252 Windows consoles |
 | `generate_*.py` | Golden-set generators (committed outputs in `goldens/`) |
-| `.env.example` | Judge backend (`TYPESAFE_*`), agent backend (`AGENT_BACKEND`, `INFERENCE_*`) |
+| `.env.example` | Judge backend (`TYPESAFE_*`), agent backend (`AGENT_BACKEND`, `AGENT_TOOLS`, `INFERENCE_*`) |

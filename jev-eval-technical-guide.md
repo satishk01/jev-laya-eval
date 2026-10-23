@@ -33,7 +33,11 @@ last, with each layer catching a distinct class of failure.
 
 This repository implements exactly that for `agent.py`, a minimal ReAct agent
 that answers beginner AI-engineering questions by searching a Markdown knowledge
-base (`agent-knowledge.md`) with a single tool, `search_knowledge(keywords)`.
+base (`agent-knowledge.md`) with one default tool, `search_knowledge(keywords)`.
+An optional second tool, `list_sections()` — which returns the knowledge base's
+section outline for meta-questions ("What topics do you cover?") — is gated
+behind `AGENT_TOOLS=search_knowledge,list_sections`; it exists so the extended
+suite can test real multi-tool selection without changing default behaviour.
 
 | Layer | Cost per test | What it catches | Implementation |
 |---|---|---|---|
@@ -235,8 +239,11 @@ answer text:
 
 `attach_tool_metrics` hangs a fresh `ToolCallValidationMetric` on every tool
 span in the current test's trace, so `assert_test(golden=...)` evaluates each
-call separately. `record_tools_called` then copies the spans into the trace's
-`tools_called`, where `ToolCorrectnessMetric` compares them against the
+call separately. It takes a `tool_name` parameter (default `search_knowledge`)
+and only attaches the keyword-contract validator to spans of that tool —
+other tools' spans (e.g. `list_sections`) are left for
+`ToolCorrectnessMetric`. `record_tools_called` then copies the spans into the
+trace's `tools_called`, where `ToolCorrectnessMetric` compares them against the
 golden's `expected_tools` — catching the "never called the tool" failure that
 per-call validation can't see (an invalid call still *was* a call).
 
@@ -301,15 +308,23 @@ than running — the report shows skips downstream of a real failure, which is
 what you want: a tool-contract violation already tells you the answer will be
 garbage.
 
-The full suite is 72 tests across 8 queries (~3–4 min; the judge phase
-dominates). Results land in `deepeval_results/test_run_*.json`.
+The full suite is 72 eval cases across 8 queries (80 pytest items
+including the 8 `test_query_group_complete` data checks; ~3–4 min — the
+judge phase dominates). Results land in `deepeval_results/test_run_*.json`.
 
 A second file, `test_agent_extended.py`, layers behavioural checks on top:
 trajectory/step budgets and keyword relevance from the trace, the refusal
 path, faithfulness of each answer sentence against the retrieved
-paragraphs (`GroundingMetric`), multi-turn history bounds, and answer
-stability across repeated runs — 49 eval cases plus 2 plain pytest checks
-and 2 `llm`-gated tests.
+paragraphs (`GroundingMetric`), multi-turn history bounds, answer
+stability across repeated runs, and — when `AGENT_TOOLS` enables
+`list_sections` — real multi-tool selection. 62 pytest items: 50 counted
+evals with the default single tool (54 with `list_sections` enabled), 6
+plain-assert checks (multi-turn + extractive routing), 2 `llm`-gated
+tests. Its trace-reading tests also work under plain `pytest` — they start
+a fresh `deepeval.tracing.trace()` via `ensure_trace()` when the test-run
+plugin hasn't provided one; the structured layer in `test_agent.py` can't
+do that (its span metrics are evaluated by the plugin) and skips cleanly
+instead.
 
 ---
 
@@ -391,8 +406,9 @@ CI before running the suite.
 
 ### 6.6 Small operational details
 
-- `PYTHONUTF8=1` on Windows, or DeepEval's results table crashes on `✓`/`⚠`
-  glyphs through cp1252.
+- DeepEval's results table crashes on `✓`/`⚠` glyphs through a cp1252
+  console; `conftest.py` fixes it by reconfiguring stdout/stderr to UTF-8
+  at import — no `PYTHONUTF8=1` needed (setting it anyway is harmless).
 - `TYPESAFE_API_KEY` must be non-empty even though `laya-serve` doesn't check it
   (unless started with `LAYA_API_KEY` set) — the SDK validates client-side.
 - `CONFIDENT_TRACE_VERBOSE=0` must be set *before* importing deepeval.
@@ -422,11 +438,15 @@ most-overlapping retrieved paragraph and judges every sentence against
 the state rather than the answer: give the judge the smallest decidable
 unit of evidence.
 
-A related extractive-backend quirk: refusal is only reachable when no
-search keyword *stem* matches the knowledge base — "bread" falls back to
-the stem `"brea"`, which prefix-matches "break"-family words, retrieves
-paragraphs, and produces an answer instead of a refusal. Out-of-scope
-test queries must be vetted for stem-level absence, not just word absence.
+A related extractive-backend quirk, now fixed: the stem fallback used to
+turn "bread" into `"brea"`, which prefix-matched "break"-family words,
+retrieved paragraphs, and produced an answer instead of a refusal.
+`stem_is_related` now verifies that words matched by a stem share the
+query word's lexeme — same Porter stem or `fuzz.ratio` ≥ 85 ("bread"~"break"
+scores exactly 80; real variants like "summarization"~"summarisation" ~96).
+Residual caveat: a query word that appears *verbatim* in the knowledge
+base in an unrelated sense still retrieves a paragraph, so out-of-scope
+test queries should still be vetted for word-level absence.
 
 ---
 
@@ -441,13 +461,13 @@ cp .env.example .env          # defaults already target local Laya + extractive 
 curl http://127.0.0.1:8000/health   # wait for "loaded": ["typed-decisions"]
 
 # terminal 2 — smoke test, then the full suite
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_first_eval.py
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py           # 72 tests
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent_extended.py  # 49 evals + 4 more
+.venv/Scripts/deepeval.exe test run test_first_eval.py
+.venv/Scripts/deepeval.exe test run test_agent.py           # 72 eval cases (80 pytest items)
+.venv/Scripts/deepeval.exe test run test_agent_extended.py  # 50 evals + checks (54 evals with AGENT_TOOLS=search_knowledge,list_sections)
 
 # subsets
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py -k "judge"
-PYTHONUTF8=1 .venv/Scripts/deepeval.exe test run test_agent.py -k "q3-fuzzy-pass"
+.venv/Scripts/deepeval.exe test run test_agent.py -k "judge"
+.venv/Scripts/deepeval.exe test run test_agent.py -k "q3-fuzzy-pass"
 ```
 
 Layer toggles (`RUN_STRUCTURED_EVALS`, `RUN_FUZZY_EVALS`, `RUN_JEV_EVALS`) and
@@ -482,14 +502,15 @@ post. Suggested split, in dependency order:
 
 | File | Role |
 |---|---|
-| `agent.py` | ReAct agent under test; `llm` and deterministic `extractive` backends |
+| `agent.py` | ReAct agent under test; `llm` and deterministic `extractive` backends; `search_knowledge` tool + opt-in `list_sections` via `AGENT_TOOLS` |
 | `agent-knowledge.md` | Markdown knowledge base; the agent's only data source |
 | `run_judge.py` | Launches `laya-serve` on 127.0.0.1:8000 (Jev wire protocol) |
 | `test_first_eval.py` | Minimal JevEval smoke test (hard-coded answer) |
-| `test_first_eval_geval.py` | Same eval via GEval (OpenAI LLM-as-judge), for comparison |
+| `test_first_eval_geval.py` | Same eval via GEval (any LLM judge — OpenAI, Ollama, …), for comparison; skips when none is configured |
 | `test_agent.py` | The layered suite: stage definitions, sequencing, judge question construction |
-| `test_agent_extended.py` | Behavioural extension: trajectory, keyword relevance, refusal, `GroundingMetric`, multi-turn, stability |
-| `deepeval_tool_util.py` | Span-level tool-call validation + trace plumbing |
+| `test_agent_extended.py` | Behavioural extension: trajectory, keyword relevance, refusal, `GroundingMetric`, multi-turn, stability, tool selection |
+| `deepeval_tool_util.py` | Span-level tool-call validation + trace plumbing (`tool_spans`, `attach_tool_metrics`, `record_tools_called`) |
+| `conftest.py` | UTF-8 stdout/stderr reconfiguration for cp1252 Windows consoles |
 | `deepeval_fuzzy_util.py` | `FuzzyMatchMetric`: exact → RapidFuzz → BLEU/ROUGE cascade |
 | `deepeval_jev_util.py` | `SharedJevDecision` + `JevQuestionMetric` over `JevEval` outcomes |
 | `generate_*.py` | Golden-set generators (context, scratch, fuzzy, structured) |
